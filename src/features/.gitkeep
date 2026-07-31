@@ -1,0 +1,14 @@
+# Feature modules live here.
+#
+# Each feature is self-contained and follows this structure:
+#
+#   features/<feature>/
+#     components/    UI specific to the feature
+#     hooks/         React Query hooks (useClients, useCreateClient, ...)
+#     services/      Data access built on @/lib/supabase
+#     schemas/       Zod schemas + inferred types
+#     types.ts       Feature-local types
+#     index.ts       Public surface of the feature
+#
+# Keep cross-feature reusable pieces in src/components/shared, src/hooks,
+# src/lib and src/utils instead.

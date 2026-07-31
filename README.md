@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Salon CRM
 
-## Getting Started
+A modern CRM for hair salons — manage clients, appointments, staff and services.
 
-First, run the development server:
+This repository currently contains the **project architecture only**. Features are
+built on top of the foundation described below.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Tech stack
+
+- **[Next.js 15](https://nextjs.org)** (App Router) + **TypeScript**
+- **[Tailwind CSS v4](https://tailwindcss.com)** + **[shadcn/ui](https://ui.shadcn.com)**
+- **[Supabase](https://supabase.com)** — Postgres database, Auth and Storage
+- **[TanStack Query](https://tanstack.com/query)** — server state / data fetching
+- **[React Hook Form](https://react-hook-form.com)** + **[Zod](https://zod.dev)** — forms & validation
+- **[TanStack Table](https://tanstack.com/table)** — data grids
+- **ESLint** + **Prettier** — linting & formatting
+
+## Getting started
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Create your environment file and fill in your Supabase credentials:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+3. Run the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000).
+
+## Environment variables
+
+See [`.env.example`](./.env.example). Variables are validated at runtime in
+[`src/lib/env.ts`](./src/lib/env.ts) with Zod, so the app fails fast with a clear
+message if anything is missing.
+
+| Variable                        | Scope  | Description                          |
+| ------------------------------- | ------ | ------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | client | Supabase project URL                 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | client | Supabase anon/public key             |
+| `SUPABASE_SERVICE_ROLE_KEY`     | server | Privileged key (never sent to client)|
+| `NEXT_PUBLIC_APP_URL`           | client | Base URL of the app                  |
+
+## Project structure
+
+```
+src/
+  app/            # App Router routes, layouts, providers wiring
+  components/
+    ui/           # shadcn/ui primitives
+    providers/    # Theme + React Query + Tooltip + Toaster
+    shared/       # Reusable app components (DataTable, PageHeader, ...)
+  features/       # Self-contained feature modules (added incrementally)
+  lib/            # Infrastructure: supabase clients, env, query client, constants
+  hooks/          # Global reusable React hooks
+  services/       # Data-access layer conventions built on Supabase
+  types/          # Shared types + generated Supabase database types
+  utils/          # Pure, framework-agnostic helpers
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Feature module convention
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Each feature is self-contained and composed from the shared foundation:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+features/<feature>/
+  components/    UI specific to the feature
+  hooks/         React Query hooks (useClients, useCreateClient, ...)
+  services/      Data access built on @/lib/supabase
+  schemas/       Zod schemas + inferred types
+  types.ts       Feature-local types
+  index.ts       Public surface of the feature
+```
 
-## Learn More
+### Supabase clients
 
-To learn more about Next.js, take a look at the following resources:
+- `@/lib/supabase/client` — browser client for Client Components
+- `@/lib/supabase/server` — async server client for Server Components / Actions
+- `@/lib/supabase/middleware` — session refresh, wired in `src/middleware.ts`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The schema lives in versioned migrations under [`supabase/migrations`](./supabase/migrations):
 
-## Deploy on Vercel
+| File                            | Contents                                                     |
+| ------------------------------- | ------------------------------------------------------------ |
+| `*_init_schema.sql`             | Enums, `users`/`clients`/`services`/`appointments`, indexes, FKs, `updated_at` triggers, grants |
+| `*_rls_and_auth.sql`            | RLS policies, `current_user_role()` helper, new-user profile trigger |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`supabase/seed.sql` seeds a set of sample services for local development.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Apply the schema** — either link the Supabase CLI to your project and push:
+
+```bash
+npx supabase link --project-ref <project-ref>
+npx supabase db push
+```
+
+…or run it locally with `npx supabase start` + `npx supabase db reset`.
+
+Regenerate database types after schema changes:
+
+```bash
+npx supabase gen types typescript --project-id <project-id> > src/types/database.types.ts
+```
+
+## Scripts
+
+| Command                | Description                        |
+| ---------------------- | ---------------------------------- |
+| `npm run dev`          | Start the dev server               |
+| `npm run build`        | Production build                   |
+| `npm run start`        | Start the production server        |
+| `npm run lint`         | Run ESLint                         |
+| `npm run lint:fix`     | Run ESLint with autofix            |
+| `npm run format`       | Format the codebase with Prettier  |
+| `npm run format:check` | Check formatting                   |
+| `npm run typecheck`    | Type-check without emitting        |
