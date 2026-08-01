@@ -118,15 +118,15 @@ export function CustomerForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-5">
-        <div className="flex items-center gap-4">
-          <Avatar className="size-16 after:rounded-full" size="lg">
-            {previewUrl ? <AvatarImage src={previewUrl} alt={previewName || "Customer"} /> : null}
-            <AvatarFallback className="text-base">
-              {previewName ? getInitials(previewName) : <UserRoundIcon className="size-6" />}
-            </AvatarFallback>
-          </Avatar>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-4">
+            <Avatar className="size-20 shrink-0 after:rounded-full" size="lg">
+              {previewUrl ? <AvatarImage src={previewUrl} alt={previewName || "Customer"} /> : null}
+              <AvatarFallback className="text-lg">
+                {previewName ? getInitials(previewName) : <UserRoundIcon className="size-7" />}
+              </AvatarFallback>
+            </Avatar>
 
-          <div>
             <input
               ref={fileInputRef}
               type="file"
@@ -139,14 +139,14 @@ export function CustomerForm({
               type="button"
               variant="outline"
               disabled={isSubmitting}
-              className="h-10 rounded-sm"
+              className="h-11 rounded-sm"
               onClick={() => fileInputRef.current?.click()}
             >
               <UploadIcon className="size-4" />
               {t("customers.uploadImage")}
             </Button>
-            <p className="text-muted-foreground mt-1.5 text-xs">{t("customers.uploadHint")}</p>
           </div>
+          <p className="text-muted-foreground pl-24 text-xs">{t("customers.uploadHint")}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -246,7 +246,7 @@ export function CustomerForm({
                 <FormLabel className="text-muted-foreground text-xs font-medium">
                   {t("customers.phone")}
                 </FormLabel>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                   <Select
                     items={COUNTRY_OPTIONS.map((option) => ({
                       value: option.dialCode,
@@ -258,7 +258,12 @@ export function CustomerForm({
                     }}
                     disabled={isSubmitting}
                   >
-                    <SelectTrigger className={cn(selectTriggerClassName, "w-[7.5rem] shrink-0")}>
+                    <SelectTrigger
+                      className={cn(
+                        selectTriggerClassName,
+                        "h-11! w-[7.5rem] shrink-0 data-[size=default]:h-11",
+                      )}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -269,11 +274,11 @@ export function CustomerForm({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormControl>
+                  <FormControl className="flex-1">
                     <Input
                       placeholder={t("customers.enterPhone")}
                       disabled={isSubmitting}
-                      className={fieldClassName}
+                      className={cn(fieldClassName, "w-full")}
                       value={localPhone}
                       onChange={(event) => setLocalPhone(event.target.value)}
                     />
