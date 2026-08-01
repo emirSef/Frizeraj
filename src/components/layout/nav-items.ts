@@ -9,15 +9,15 @@ import type { LucideIcon } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
 
 export interface NavItem {
-  label: string;
+  labelKey: "nav.dashboard" | "nav.customers" | "nav.calendar" | "nav.services";
   href: string;
   icon: LucideIcon;
   disabled?: boolean;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", href: ROUTES.dashboard, icon: LayoutDashboardIcon },
-  { label: "Customers", href: ROUTES.customers, icon: UsersIcon },
-  { label: "Calendar", href: ROUTES.calendar, icon: CalendarDaysIcon },
-  { label: "Services", href: ROUTES.services, icon: SparklesIcon },
+  { labelKey: "nav.dashboard", href: ROUTES.dashboard, icon: LayoutDashboardIcon },
+  { labelKey: "nav.customers", href: ROUTES.customers, icon: UsersIcon },
+  { labelKey: "nav.calendar", href: ROUTES.calendar, icon: CalendarDaysIcon },
+  { labelKey: "nav.services", href: ROUTES.services, icon: SparklesIcon },
 ];

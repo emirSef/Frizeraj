@@ -21,9 +21,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "@/i18n";
 
 export function LoginForm() {
   const router = useRouter();
+  const t = useTranslations();
   const [isPending, setIsPending] = React.useState(false);
 
   const form = useForm<LoginInput>({
@@ -41,14 +43,14 @@ export function LoginForm() {
       });
 
       if (error) {
-        toast.error("Sign in failed", { description: error.message });
+        toast.error(t("auth.signInFailed"), { description: error.message });
         return;
       }
 
       router.replace(ROUTES.dashboard);
       router.refresh();
     } catch (error) {
-      toast.error("Sign in failed", { description: getErrorMessage(error) });
+      toast.error(t("auth.signInFailed"), { description: getErrorMessage(error) });
     } finally {
       setIsPending(false);
     }
@@ -62,11 +64,11 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("auth.email")}</FormLabel>
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="you@salon.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   autoComplete="email"
                   disabled={isPending}
                   {...field}
@@ -82,7 +84,7 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("auth.password")}</FormLabel>
               <FormControl>
                 <Input
                   type="password"
@@ -99,7 +101,7 @@ export function LoginForm() {
 
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? <Loader2Icon className="size-4 animate-spin" /> : null}
-          Sign in
+          {t("auth.signIn")}
         </Button>
       </form>
     </Form>

@@ -4,6 +4,7 @@ import * as React from "react";
 import { ChevronDownIcon, SearchIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/i18n";
 import { clientLabel, type CalendarClient } from "../types";
 
 interface CustomerComboboxProps {
@@ -23,6 +24,7 @@ export function CustomerCombobox({
   accentColor = "#3b82f6",
   invalid,
 }: CustomerComboboxProps) {
+  const t = useTranslations();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
@@ -75,7 +77,7 @@ export function CustomerCombobox({
             if (value) onChange("");
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Enter customer name here"
+          placeholder={t("calendar.enterCustomer")}
           disabled={disabled}
           className="placeholder:text-muted-foreground min-w-0 flex-1 bg-transparent text-sm outline-none"
           autoComplete="off"
@@ -96,7 +98,9 @@ export function CustomerCombobox({
       {open ? (
         <div className="bg-popover text-popover-foreground absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-56 w-full overflow-y-auto rounded-xl border shadow-md">
           {filtered.length === 0 ? (
-            <p className="text-muted-foreground px-3 py-2.5 text-sm">No customers found.</p>
+            <p className="text-muted-foreground px-3 py-2.5 text-sm">
+              {t("calendar.noCustomersFound")}
+            </p>
           ) : (
             <ul className="p-1">
               {filtered.map((client) => {

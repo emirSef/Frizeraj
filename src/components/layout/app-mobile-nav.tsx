@@ -5,13 +5,15 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/components/layout/nav-items";
+import { useTranslations } from "@/i18n";
 
 export function AppMobileNav() {
   const pathname = usePathname();
+  const t = useTranslations();
 
   return (
     <nav
-      aria-label="Main navigation"
+      aria-label={t("nav.main")}
       className="bg-background/95 fixed inset-x-0 bottom-0 z-20 border-t backdrop-blur md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
@@ -30,7 +32,7 @@ export function AppMobileNav() {
               )}
             >
               <Icon className="size-5" />
-              <span className="truncate">{item.label}</span>
+              <span className="truncate">{t(item.labelKey)}</span>
             </Link>
           );
         })}

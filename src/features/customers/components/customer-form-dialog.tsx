@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getErrorMessage } from "@/lib/errors";
+import { useTranslations } from "@/i18n";
 import { CustomerForm } from "./customer-form";
 import { useCreateCustomer, useUpdateCustomer } from "../hooks/use-customer-mutations";
 import { uploadCustomerAvatar } from "../lib/upload-avatar";
@@ -39,6 +40,7 @@ function toFormValues(customer: CustomerListItem): CustomerFormValues {
 }
 
 export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFormDialogProps) {
+  const t = useTranslations();
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
   const [isUploading, setIsUploading] = React.useState(false);
@@ -66,7 +68,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
         createCustomer.mutate(nextValues, { onSuccess: () => onOpenChange(false) });
       }
     } catch (error) {
-      toast.error("Could not upload image", { description: getErrorMessage(error) });
+      toast.error(t("customers.couldNotUpload"), { description: getErrorMessage(error) });
     } finally {
       setIsUploading(false);
     }
@@ -77,7 +79,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
       <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl bg-background p-0 sm:max-w-2xl dark:bg-background">
         <DialogHeader className="border-b px-6 py-5 pr-12">
           <DialogTitle className="text-lg font-semibold tracking-tight">
-            {isEditing ? "Edit Customer" : "Add New Customer"}
+            {isEditing ? t("customers.edit") : t("customers.addNew")}
           </DialogTitle>
         </DialogHeader>
 
@@ -87,7 +89,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
             defaultValues={customer ? toFormValues(customer) : customerFormDefaults}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
-            submitLabel="Save"
+            submitLabel={t("common.save")}
           />
         </div>
       </DialogContent>
