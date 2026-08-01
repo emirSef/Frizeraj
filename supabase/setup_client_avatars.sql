@@ -1,21 +1,14 @@
--- ============================================================================
--- Salon CRM — client avatars + personal ID
+-- Run this once in the Supabase SQL Editor:
+-- https://supabase.com/dashboard/project/rjzhmkrjdwtiviusjets/sql/new
 --
---   * Add optional personal_id / passport field on clients
---   * Create a public storage bucket for customer profile images
--- ============================================================================
-
-alter table public.clients
-  add column if not exists personal_id text;
-
-comment on column public.clients.personal_id is 'Optional personal ID / passport number.';
+-- Creates the storage bucket + policies needed for customer image upload.
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'client-avatars',
   'client-avatars',
   true,
-  5242880, -- 5 MB
+  5242880,
   array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 )
 on conflict (id) do update

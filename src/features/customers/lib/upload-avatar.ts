@@ -33,6 +33,11 @@ export async function uploadCustomerAvatar(file: File, customerId?: string): Pro
   });
 
   if (error) {
+    if (/bucket not found/i.test(error.message)) {
+      throw new Error(
+        'Storage bucket "client-avatars" is missing. Run supabase/setup_client_avatars.sql in the Supabase SQL Editor.',
+      );
+    }
     throw new Error(error.message);
   }
 
