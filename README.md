@@ -50,6 +50,17 @@ message if anything is missing.
 | `SUPABASE_SERVICE_ROLE_KEY`     | server | Privileged key (never sent to client)|
 | `NEXT_PUBLIC_APP_URL`           | client | Base URL of the app                  |
 
+### Deploying to Vercel
+
+Add the variables above in your Vercel project under **Settings → Environment Variables**
+for Production (and Preview/Development if you use those). At minimum you need:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Without them, the build may succeed but the app will fail at runtime when it tries to
+connect to Supabase.
+
 ## Project structure
 
 ```
