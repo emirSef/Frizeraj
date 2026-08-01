@@ -274,15 +274,17 @@ export function CustomerForm({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormControl className="flex-1">
-                    <Input
-                      placeholder={t("customers.enterPhone")}
-                      disabled={isSubmitting}
-                      className={cn(fieldClassName, "w-full")}
-                      value={localPhone}
-                      onChange={(event) => setLocalPhone(event.target.value)}
-                    />
-                  </FormControl>
+                  <div className="min-w-0 flex-1">
+                    <FormControl>
+                      <Input
+                        placeholder={t("customers.enterPhone")}
+                        disabled={isSubmitting}
+                        className={cn(fieldClassName, "w-full")}
+                        value={localPhone}
+                        onChange={(event) => setLocalPhone(event.target.value)}
+                      />
+                    </FormControl>
+                  </div>
                 </div>
                 <FormMessage />
               </FormItem>
