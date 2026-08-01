@@ -76,7 +76,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl bg-background p-0 sm:max-w-2xl dark:bg-background">
+      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-sm bg-background p-0 sm:max-w-2xl dark:bg-background">
         <DialogHeader className="border-b px-6 py-5 pr-12">
           <DialogTitle className="text-lg font-semibold tracking-tight">
             {isEditing ? t("customers.edit") : t("customers.addNew")}
