@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -73,25 +72,25 @@ export function AppointmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit appointment" : "New appointment"}</DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? "Update the details of this appointment."
-              : "Book a new appointment. The end time is set from the service duration."}
-          </DialogDescription>
+      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl bg-background p-0 sm:max-w-xl dark:bg-background">
+        <DialogHeader className="border-b px-6 py-5 pr-12">
+          <DialogTitle className="text-lg font-semibold tracking-tight">
+            {isEditing ? "Edit Appointment" : "Create New Appointment"}
+          </DialogTitle>
         </DialogHeader>
 
-        <AppointmentForm
-          key={appointment?.id ?? `new-${formValues.date}-${formValues.start_time}`}
-          defaultValues={formValues}
-          services={servicesQuery.data ?? []}
-          clients={clientsQuery.data ?? []}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-          submitLabel={isEditing ? "Save changes" : "Create appointment"}
-        />
+        <div className="px-6 py-5">
+          <AppointmentForm
+            key={appointment?.id ?? `new-${formValues.date}-${formValues.start_time}`}
+            defaultValues={formValues}
+            services={servicesQuery.data ?? []}
+            clients={clientsQuery.data ?? []}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            submitLabel={isEditing ? "Save" : "Save"}
+            showStatus={isEditing}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
