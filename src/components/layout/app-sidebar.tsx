@@ -2,31 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  CalendarDaysIcon,
-  LayoutDashboardIcon,
-  ScissorsIcon,
-  SparklesIcon,
-  UsersIcon,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ScissorsIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { APP_NAME, ROUTES } from "@/lib/constants";
-
-interface NavItem {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-  disabled?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", href: ROUTES.dashboard, icon: LayoutDashboardIcon },
-  { label: "Customers", href: ROUTES.customers, icon: UsersIcon },
-  { label: "Calendar", href: ROUTES.calendar, icon: CalendarDaysIcon },
-  { label: "Services", href: ROUTES.services, icon: SparklesIcon },
-];
+import { APP_NAME } from "@/lib/constants";
+import { NAV_ITEMS } from "@/components/layout/nav-items";
 
 export function AppSidebar() {
   const pathname = usePathname();
