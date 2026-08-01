@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useTranslations } from "@/i18n";
 import { getServiceColumns } from "./service-columns";
 import { ServiceFormDialog } from "./service-form-dialog";
 import { ServicesTable } from "./services-table";
@@ -22,6 +23,7 @@ import { useSetServiceActive } from "../hooks/use-service-mutations";
 import type { ServiceItem } from "../types";
 
 export function ServicesPageClient({ canManage }: { canManage: boolean }) {
+  const t = useTranslations();
   const [searchInput, setSearchInput] = React.useState("");
   const search = useDebounce(searchInput, 300);
   const [sorting, setSorting] = React.useState<SortingState>([{ id: "name", desc: false }]);
@@ -79,13 +81,13 @@ export function ServicesPageClient({ canManage }: { canManage: boolean }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Services"
-        description="Manage the treatments your salon offers."
+        title={t("services.title")}
+        description={t("services.description")}
         actions={
           canManage ? (
             <Button onClick={openCreate}>
               <PlusIcon className="size-4" />
-              New Service
+              {t("services.newService")}
             </Button>
           ) : undefined
         }
@@ -98,9 +100,9 @@ export function ServicesPageClient({ canManage }: { canManage: boolean }) {
             <Input
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Search services by name"
+              placeholder={t("services.searchPlaceholder")}
               className="pl-8"
-              aria-label="Search services"
+              aria-label={t("services.searchPlaceholder")}
             />
           </div>
         </div>

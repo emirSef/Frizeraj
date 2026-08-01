@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
+import { useTranslations } from "@/i18n";
 import { getCustomerColumns } from "./customer-columns";
 import { CustomerDetailsDialog } from "./customer-details-dialog";
 import { CustomerFormDialog } from "./customer-form-dialog";
@@ -23,6 +24,7 @@ import { useDeleteCustomer } from "../hooks/use-customer-mutations";
 import type { CustomerListItem, CustomerSortField } from "../types";
 
 export function CustomersPageClient() {
+  const t = useTranslations();
   const [searchInput, setSearchInput] = React.useState("");
   const search = useDebounce(searchInput, 300);
 
@@ -70,11 +72,11 @@ export function CustomersPageClient() {
   const handleDelete = React.useCallback(
     (customer: CustomerListItem) => {
       const name = `${customer.first_name} ${customer.last_name}`.trim();
-      if (window.confirm(`Delete ${name}? This cannot be undone.`)) {
+      if (window.confirm(t("customers.deleteConfirm", { name }))) {
         deleteCustomer.mutate(customer.id);
       }
     },
-    [deleteCustomer],
+    [deleteCustomer, t],
   );
 
   const columns = React.useMemo(
@@ -104,12 +106,12 @@ export function CustomersPageClient() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Customers"
-        description="Manage your salon's customers."
+        title={t("customers.title")}
+        description={t("customers.description")}
         actions={
           <Button onClick={openCreate}>
             <PlusIcon className="size-4" />
-            New Customer
+            {t("customers.newCustomer")}
           </Button>
         }
       />
@@ -121,13 +123,13 @@ export function CustomersPageClient() {
             <Input
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Search by name, email or phone"
+              placeholder={t("customers.searchPlaceholder")}
               className="pl-8"
-              aria-label="Search customers"
+              aria-label={t("customers.searchPlaceholder")}
             />
           </div>
           {isFetching ? (
-            <span className="text-muted-foreground text-xs">Updating…</span>
+            <span className="text-muted-foreground text-xs">{t("customers.updating")}</span>
           ) : null}
         </div>
 
@@ -136,8 +138,8 @@ export function CustomersPageClient() {
         <div className="flex flex-col items-center justify-between gap-3 border-t p-4 sm:flex-row">
           <p className="text-muted-foreground text-sm">
             {total > 0
-              ? `Showing ${rangeStart}–${rangeEnd} of ${total}`
-              : "No customers"}
+              ? t("customers.showing", { from: rangeStart, to: rangeEnd, total })
+              : t("customers.noCustomers")}
           </p>
           <div className="flex items-center gap-2">
             <Button
@@ -146,10 +148,10 @@ export function CustomersPageClient() {
               onClick={() => setPage((current) => Math.max(1, current - 1))}
               disabled={page <= 1 || isFetching}
             >
-              Previous
+              {t("common.previous")}
             </Button>
             <span className="text-muted-foreground text-sm">
-              Page {page} of {pageCount}
+              {t("customers.pageOf", { page, pages: pageCount })}
             </span>
             <Button
               variant="outline"
@@ -157,7 +159,7 @@ export function CustomersPageClient() {
               onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
               disabled={page >= pageCount || isFetching}
             >
-              Next
+              {t("common.next")}
             </Button>
           </div>
         </div>

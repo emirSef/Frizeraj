@@ -13,6 +13,7 @@ import type { EventResizeDoneArg } from "@fullcalendar/interaction";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
 import { CompleteAppointmentDialog } from "@/features/service-records";
+import { useTranslations } from "@/i18n";
 import { useAppointments } from "../hooks/use-appointments";
 import { useUpdateAppointmentTime } from "../hooks/use-appointment-mutations";
 import { AppointmentDetailsDialog } from "./appointment-details-dialog";
@@ -20,16 +21,21 @@ import { AppointmentFormDialog } from "./appointment-form-dialog";
 import type { AppointmentFormValues } from "../schemas/appointment-schema";
 import type { CalendarAppointment, DateRange } from "../types";
 
+function CalendarLoading() {
+  const t = useTranslations();
+  return (
+    <div className="text-muted-foreground flex h-full items-center justify-center gap-2 text-sm">
+      <Loader2Icon className="size-4 animate-spin" />
+      {t("calendar.loading")}
+    </div>
+  );
+}
+
 const AppointmentCalendar = dynamic(
   () => import("./appointment-calendar").then((module) => module.AppointmentCalendar),
   {
     ssr: false,
-    loading: () => (
-      <div className="text-muted-foreground flex h-full items-center justify-center gap-2 text-sm">
-        <Loader2Icon className="size-4 animate-spin" />
-        Loading calendar…
-      </div>
-    ),
+    loading: () => <CalendarLoading />,
   },
 );
 
@@ -37,6 +43,7 @@ const DATE_FMT = "yyyy-MM-dd";
 const TIME_FMT = "HH:mm:ss";
 
 export function CalendarPageClient() {
+  const t = useTranslations();
   const today = useMemo(() => new Date(), []);
   const [range, setRange] = useState<DateRange>(() => ({
     start: format(startOfWeek(today, { weekStartsOn: 1 }), DATE_FMT),
@@ -149,12 +156,12 @@ export function CalendarPageClient() {
   return (
     <div className="flex h-full flex-col gap-4">
       <PageHeader
-        title="Calendar"
-        description="View and manage appointments. Drag to reschedule, resize to adjust duration."
+        title={t("calendar.title")}
+        description={t("calendar.description")}
         actions={
           <Button onClick={openCreate}>
             <PlusIcon className="size-4" />
-            New appointment
+            {t("calendar.newAppointment")}
           </Button>
         }
       />
@@ -163,7 +170,7 @@ export function CalendarPageClient() {
         {appointmentsQuery.isFetching ? (
           <div className="text-muted-foreground bg-background/80 absolute top-4 right-5 z-10 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs">
             <Loader2Icon className="size-3 animate-spin" />
-            Updating…
+            {t("calendar.updating")}
           </div>
         ) : null}
         <AppointmentCalendar

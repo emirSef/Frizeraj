@@ -39,6 +39,7 @@ import {
   joinPhone,
   splitPhone,
 } from "../lib/locations";
+import { useTranslations } from "@/i18n";
 import {
   customerSchema,
   GENDER_RADIO_OPTIONS,
@@ -62,6 +63,7 @@ export function CustomerForm({
   isSubmitting,
   submitLabel = "Save",
 }: CustomerFormProps) {
+  const t = useTranslations();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [avatarFile, setAvatarFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(
@@ -141,9 +143,9 @@ export function CustomerForm({
               onClick={() => fileInputRef.current?.click()}
             >
               <UploadIcon className="size-4" />
-              Upload Image
+              {t("customers.uploadImage")}
             </Button>
-            <p className="text-muted-foreground mt-1.5 text-xs">JPG, PNG, WEBP or GIF up to 5 MB</p>
+            <p className="text-muted-foreground mt-1.5 text-xs">{t("customers.uploadHint")}</p>
           </div>
         </div>
 
@@ -154,11 +156,11 @@ export function CustomerForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-muted-foreground text-xs font-medium">
-                  First Name
+                  {t("customers.firstName")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter first name here"
+                    placeholder={t("customers.enterFirstName")}
                     disabled={isSubmitting}
                     className={fieldClassName}
                     {...field}
@@ -175,11 +177,11 @@ export function CustomerForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-muted-foreground text-xs font-medium">
-                  Last Name
+                  {t("customers.lastName")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter last name here"
+                    placeholder={t("customers.enterLastName")}
                     disabled={isSubmitting}
                     className={fieldClassName}
                     {...field}
@@ -196,7 +198,7 @@ export function CustomerForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-muted-foreground text-xs font-medium">
-                  Birth Date
+                  {t("customers.birthDate")}
                 </FormLabel>
                 <FormControl>
                   <div className="relative">
@@ -219,11 +221,13 @@ export function CustomerForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Email</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("customers.email")}
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="Enter email here"
+                    placeholder={t("customers.enterEmail")}
                     disabled={isSubmitting}
                     className={fieldClassName}
                     {...field}
@@ -239,7 +243,9 @@ export function CustomerForm({
             name="phone"
             render={() => (
               <FormItem className="sm:col-span-2">
-                <FormLabel className="text-muted-foreground text-xs font-medium">Phone</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("customers.phone")}
+                </FormLabel>
                 <div className="flex gap-2">
                   <Select
                     items={COUNTRY_OPTIONS.map((option) => ({
@@ -265,7 +271,7 @@ export function CustomerForm({
                   </Select>
                   <FormControl>
                     <Input
-                      placeholder="Enter phone number"
+                      placeholder={t("customers.enterPhone")}
                       disabled={isSubmitting}
                       className={fieldClassName}
                       value={localPhone}
@@ -284,7 +290,9 @@ export function CustomerForm({
           name="gender"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-muted-foreground text-xs font-medium">Gender</FormLabel>
+              <FormLabel className="text-muted-foreground text-xs font-medium">
+                {t("customers.gender")}
+              </FormLabel>
               <FormControl>
                 <div className="flex flex-wrap items-center gap-5 pt-1">
                   {GENDER_RADIO_OPTIONS.map((option) => {
@@ -316,7 +324,7 @@ export function CustomerForm({
                             )}
                           />
                         </span>
-                        {option.label}
+                        {t(`customers.${option.value}`)}
                       </label>
                     );
                   })}
@@ -333,7 +341,9 @@ export function CustomerForm({
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Country</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("customers.country")}
+                </FormLabel>
                 <Select
                   items={COUNTRY_OPTIONS.map((option) => ({
                     value: option.name,
@@ -355,7 +365,7 @@ export function CustomerForm({
                 >
                   <FormControl>
                     <SelectTrigger className={selectTriggerClassName}>
-                      <SelectValue placeholder="Select country" />
+                      <SelectValue placeholder={t("customers.selectCountry")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -379,7 +389,9 @@ export function CustomerForm({
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Cities</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("customers.cities")}
+                </FormLabel>
                 <Select
                   items={cityOptions.map((city) => ({ value: city, label: city }))}
                   value={field.value ? field.value : null}
@@ -389,7 +401,7 @@ export function CustomerForm({
                   <FormControl>
                     <SelectTrigger className={selectTriggerClassName}>
                       <MapPinIcon className="text-muted-foreground size-4" />
-                      <SelectValue placeholder="Select Cities" />
+                      <SelectValue placeholder={t("customers.selectCities")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -411,10 +423,12 @@ export function CustomerForm({
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-muted-foreground text-xs font-medium">Notes</FormLabel>
+              <FormLabel className="text-muted-foreground text-xs font-medium">
+                {t("customers.notes")}
+              </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter notes here"
+                  placeholder={t("customers.enterNotes")}
                   disabled={isSubmitting}
                   className="min-h-20 rounded-xl border-border bg-background px-3 py-3 text-sm shadow-none md:text-sm"
                   {...field}
@@ -434,7 +448,7 @@ export function CustomerForm({
                 disabled={isSubmitting}
                 className="h-11 w-full rounded-xl bg-muted text-foreground hover:bg-muted/80"
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             }
           />
@@ -444,7 +458,7 @@ export function CustomerForm({
             className="h-11 w-full rounded-xl bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
           >
             {isSubmitting ? <Loader2Icon className="size-4 animate-spin" /> : null}
-            {submitLabel}
+            {submitLabel || t("common.save")}
           </Button>
         </div>
       </form>

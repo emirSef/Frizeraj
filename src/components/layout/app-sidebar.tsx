@@ -7,9 +7,11 @@ import { ScissorsIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { NAV_ITEMS } from "@/components/layout/nav-items";
+import { useTranslations } from "@/i18n";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const t = useTranslations();
 
   return (
     <aside className="bg-sidebar hidden w-60 shrink-0 flex-col border-r md:flex">
@@ -20,10 +22,11 @@ export function AppSidebar() {
         <span className="text-sm font-semibold tracking-tight">{APP_NAME}</span>
       </div>
 
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="flex-1 space-y-1 p-3" aria-label={t("nav.main")}>
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
+          const label = t(item.labelKey);
 
           if (item.disabled) {
             return (
@@ -33,10 +36,7 @@ export function AppSidebar() {
                 className="text-muted-foreground/60 flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm"
               >
                 <Icon className="size-4" />
-                {item.label}
-                <span className="bg-muted text-muted-foreground ml-auto rounded px-1.5 py-0.5 text-[10px]">
-                  Soon
-                </span>
+                {label}
               </span>
             );
           }
@@ -53,7 +53,7 @@ export function AppSidebar() {
               )}
             >
               <Icon className="size-4" />
-              {item.label}
+              {label}
             </Link>
           );
         })}

@@ -25,6 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { DialogClose } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/i18n";
 import {
   appointmentSchema,
   NOTES_MAX_LENGTH,
@@ -56,6 +57,7 @@ export function AppointmentForm({
   submitLabel = "Save",
   showStatus = false,
 }: AppointmentFormProps) {
+  const t = useTranslations();
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues,
@@ -83,7 +85,9 @@ export function AppointmentForm({
           name="client_id"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className="text-muted-foreground text-xs font-medium">Customer</FormLabel>
+              <FormLabel className="text-muted-foreground text-xs font-medium">
+                {t("calendar.customer")}
+              </FormLabel>
               <FormControl>
                 <CustomerCombobox
                   clients={clients}
@@ -100,7 +104,7 @@ export function AppointmentForm({
         />
 
         <div className="space-y-2">
-          <p className="text-muted-foreground text-xs font-medium">Select Time</p>
+          <p className="text-muted-foreground text-xs font-medium">{t("calendar.selectTime")}</p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1.2fr_1fr_auto_1fr] sm:items-center">
             <FormField
               control={form.control}
@@ -145,7 +149,9 @@ export function AppointmentForm({
               )}
             />
 
-            <span className="text-muted-foreground hidden text-center text-sm sm:block">to</span>
+            <span className="text-muted-foreground hidden text-center text-sm sm:block">
+              {t("calendar.to")}
+            </span>
 
             <FormItem>
               <FormControl>
@@ -156,14 +162,14 @@ export function AppointmentForm({
                     value={endPreview}
                     readOnly
                     tabIndex={-1}
-                    placeholder="End"
-                    aria-label="End time"
+                    placeholder={t("calendar.endTime")}
+                    aria-label={t("calendar.endTime")}
                     className={cn(fieldClassName, "text-muted-foreground pl-9")}
                   />
                 </div>
               </FormControl>
               <p className="text-muted-foreground text-xs sm:hidden">
-                End time is calculated from the service duration
+                {t("calendar.endTimeHint")}
                 {endPreview ? ` (${endPreview})` : ""}.
               </p>
             </FormItem>
@@ -176,7 +182,9 @@ export function AppointmentForm({
             name="service_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Service</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("calendar.service")}
+                </FormLabel>
                 <Select
                   items={serviceItems}
                   value={field.value ? field.value : null}
@@ -191,7 +199,7 @@ export function AppointmentForm({
                 >
                   <FormControl>
                     <SelectTrigger className={selectTriggerClassName}>
-                      <SelectValue placeholder="Enter service here" />
+                      <SelectValue placeholder={t("calendar.enterService")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -212,14 +220,16 @@ export function AppointmentForm({
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Price</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("calendar.price")}
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     inputMode="decimal"
                     min={0}
                     step="0.01"
-                    placeholder="Enter price"
+                    placeholder={t("calendar.enterPrice")}
                     disabled={isSubmitting}
                     className={fieldClassName}
                     {...field}
@@ -237,10 +247,12 @@ export function AppointmentForm({
             name="treatment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Treatment</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("calendar.treatment")}
+                </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter treatment here"
+                    placeholder={t("calendar.enterTreatment")}
                     disabled={isSubmitting}
                     className={fieldClassName}
                     {...field}
@@ -256,10 +268,12 @@ export function AppointmentForm({
             name="products"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Products</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("calendar.products")}
+                </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter product here"
+                    placeholder={t("calendar.enterProduct")}
                     disabled={isSubmitting}
                     className={fieldClassName}
                     {...field}
@@ -276,11 +290,13 @@ export function AppointmentForm({
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-muted-foreground text-xs font-medium">Notes</FormLabel>
+              <FormLabel className="text-muted-foreground text-xs font-medium">
+                {t("calendar.notes")}
+              </FormLabel>
               <FormControl>
                 <div className="relative">
                   <Textarea
-                    placeholder="Enter your note here"
+                    placeholder={t("calendar.enterNote")}
                     disabled={isSubmitting}
                     maxLength={NOTES_MAX_LENGTH}
                     className="min-h-28 resize-none rounded-xl border-border bg-background px-3 py-3 pb-8 text-sm shadow-none md:text-sm"
@@ -302,15 +318,17 @@ export function AppointmentForm({
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">Status</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs font-medium">
+                  {t("calendar.status")}
+                </FormLabel>
                 <Select
                   items={[
-                    { value: "scheduled", label: "Scheduled" },
-                    { value: "confirmed", label: "Confirmed" },
-                    { value: "in_progress", label: "In Progress" },
-                    { value: "completed", label: "Completed" },
-                    { value: "cancelled", label: "Cancelled" },
-                    { value: "no_show", label: "No Show" },
+                    { value: "scheduled", label: t("calendar.scheduled") },
+                    { value: "confirmed", label: t("calendar.confirmed") },
+                    { value: "in_progress", label: t("calendar.inProgress") },
+                    { value: "completed", label: t("calendar.completed") },
+                    { value: "cancelled", label: t("calendar.cancelled") },
+                    { value: "no_show", label: t("calendar.noShow") },
                   ]}
                   value={field.value}
                   onValueChange={(value) => field.onChange(value)}
@@ -318,16 +336,16 @@ export function AppointmentForm({
                 >
                   <FormControl>
                     <SelectTrigger className={selectTriggerClassName}>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder={t("calendar.status")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
-                    <SelectItem value="confirmed">Confirmed</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                    <SelectItem value="no_show">No Show</SelectItem>
+                    <SelectItem value="scheduled">{t("calendar.scheduled")}</SelectItem>
+                    <SelectItem value="confirmed">{t("calendar.confirmed")}</SelectItem>
+                    <SelectItem value="in_progress">{t("calendar.inProgress")}</SelectItem>
+                    <SelectItem value="completed">{t("calendar.completed")}</SelectItem>
+                    <SelectItem value="cancelled">{t("calendar.cancelled")}</SelectItem>
+                    <SelectItem value="no_show">{t("calendar.noShow")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -347,7 +365,7 @@ export function AppointmentForm({
                 disabled={isSubmitting}
                 className="h-11 w-full rounded-xl bg-muted text-foreground hover:bg-muted/80"
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             }
           />
@@ -357,7 +375,7 @@ export function AppointmentForm({
             className="h-11 w-full rounded-xl bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
           >
             {isSubmitting ? <Loader2Icon className="size-4 animate-spin" /> : null}
-            {submitLabel}
+            {submitLabel || t("common.save")}
           </Button>
         </div>
       </form>

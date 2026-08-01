@@ -12,6 +12,7 @@ import {
   useUpdateAppointment,
 } from "../hooks/use-appointment-mutations";
 import { useClientsLookup, useServices } from "../hooks/use-lookups";
+import { useTranslations } from "@/i18n";
 import {
   appointmentFormDefaults,
   type AppointmentFormValues,
@@ -47,6 +48,7 @@ export function AppointmentFormDialog({
   appointment,
   defaults,
 }: AppointmentFormDialogProps) {
+  const t = useTranslations();
   const servicesQuery = useServices();
   const clientsQuery = useClientsLookup();
   const createAppointment = useCreateAppointment();
@@ -75,7 +77,7 @@ export function AppointmentFormDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl bg-background p-0 sm:max-w-xl dark:bg-background">
         <DialogHeader className="border-b px-6 py-5 pr-12">
           <DialogTitle className="text-lg font-semibold tracking-tight">
-            {isEditing ? "Edit Appointment" : "Create New Appointment"}
+            {isEditing ? t("calendar.editAppointment") : t("calendar.createNew")}
           </DialogTitle>
         </DialogHeader>
 
@@ -87,7 +89,7 @@ export function AppointmentFormDialog({
             clients={clientsQuery.data ?? []}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
-            submitLabel={isEditing ? "Save" : "Save"}
+            submitLabel={t("common.save")}
             showStatus={isEditing}
           />
         </div>
