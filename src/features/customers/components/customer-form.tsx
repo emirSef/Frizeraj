@@ -118,11 +118,11 @@ export function CustomerForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-5">
-        <div className="flex items-center gap-4">
-          <Avatar className="size-24 shrink-0 after:rounded-full" size="lg">
+        <div className="flex items-start gap-4">
+          <Avatar className="!size-32 shrink-0 after:rounded-full">
             {previewUrl ? <AvatarImage src={previewUrl} alt={previewName || "Customer"} /> : null}
-            <AvatarFallback className="text-xl">
-              {previewName ? getInitials(previewName) : <UserRoundIcon className="size-8" />}
+            <AvatarFallback className="text-2xl">
+              {previewName ? getInitials(previewName) : <UserRoundIcon className="size-10" />}
             </AvatarFallback>
           </Avatar>
 
