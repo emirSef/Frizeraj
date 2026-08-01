@@ -1,14 +1,18 @@
 "use client";
 
+import * as React from "react";
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getErrorMessage } from "@/lib/errors";
 import { CustomerForm } from "./customer-form";
 import { useCreateCustomer, useUpdateCustomer } from "../hooks/use-customer-mutations";
+import { uploadCustomerAvatar } from "../lib/upload-avatar";
 import { customerFormDefaults, type CustomerFormValues } from "../schemas/customer-schema";
 import type { CustomerListItem } from "../types";
 
@@ -25,51 +29,68 @@ function toFormValues(customer: CustomerListItem): CustomerFormValues {
     last_name: customer.last_name,
     email: customer.email ?? "",
     phone: customer.phone ?? "",
+    personal_id: customer.personal_id ?? "",
     birth_date: customer.birth_date ?? "",
-    gender: customer.gender,
+    gender: customer.gender ?? "male",
     country: customer.country ?? "",
     city: customer.city ?? "",
     notes: customer.notes ?? "",
+    avatar_url: customer.avatar_url ?? "",
   };
 }
 
 export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFormDialogProps) {
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
+  const [isUploading, setIsUploading] = React.useState(false);
 
   const isEditing = Boolean(customer);
-  const isSubmitting = createCustomer.isPending || updateCustomer.isPending;
+  const isSubmitting =
+    isUploading || createCustomer.isPending || updateCustomer.isPending;
 
-  function handleSubmit(values: CustomerFormValues) {
-    if (customer) {
-      updateCustomer.mutate(
-        { id: customer.id, values },
-        { onSuccess: () => onOpenChange(false) },
-      );
-    } else {
-      createCustomer.mutate(values, { onSuccess: () => onOpenChange(false) });
+  async function handleSubmit(values: CustomerFormValues, avatarFile: File | null) {
+    try {
+      let nextValues = values;
+
+      if (avatarFile) {
+        setIsUploading(true);
+        const avatarUrl = await uploadCustomerAvatar(avatarFile, customer?.id);
+        nextValues = { ...values, avatar_url: avatarUrl };
+      }
+
+      if (customer) {
+        updateCustomer.mutate(
+          { id: customer.id, values: nextValues },
+          { onSuccess: () => onOpenChange(false) },
+        );
+      } else {
+        createCustomer.mutate(nextValues, { onSuccess: () => onOpenChange(false) });
+      }
+    } catch (error) {
+      toast.error("Could not upload image", { description: getErrorMessage(error) });
+    } finally {
+      setIsUploading(false);
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Customer" : "Add New Customer"}</DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? "Update this customer's details."
-              : "Fill in the details to add a new customer."}
-          </DialogDescription>
+      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl bg-background p-0 sm:max-w-2xl dark:bg-background">
+        <DialogHeader className="border-b px-6 py-5 pr-12">
+          <DialogTitle className="text-lg font-semibold tracking-tight">
+            {isEditing ? "Edit Customer" : "Add New Customer"}
+          </DialogTitle>
         </DialogHeader>
 
-        <CustomerForm
-          key={customer?.id ?? "new"}
-          defaultValues={customer ? toFormValues(customer) : customerFormDefaults}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-          submitLabel={isEditing ? "Save changes" : "Save"}
-        />
+        <div className="px-6 py-5">
+          <CustomerForm
+            key={customer?.id ?? "new"}
+            defaultValues={customer ? toFormValues(customer) : customerFormDefaults}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            submitLabel="Save"
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
