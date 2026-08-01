@@ -33,6 +33,9 @@ export function statusColor(status: AppointmentStatus): string {
 
 const optionalText = (max: number) => z.string().trim().max(max).optional().or(z.literal(""));
 
+/** Matches the notes character counter in the create/edit appointment dialog. */
+export const NOTES_MAX_LENGTH = 50;
+
 export const appointmentSchema = z.object({
   client_id: z.string().uuid("Select a customer"),
   service_id: z.string().uuid("Select a service"),
@@ -54,7 +57,7 @@ export const appointmentSchema = z.object({
     .or(z.literal("")),
   treatment: optionalText(200),
   products: optionalText(500),
-  notes: optionalText(2000),
+  notes: optionalText(NOTES_MAX_LENGTH),
 });
 
 export type AppointmentFormValues = z.infer<typeof appointmentSchema>;
