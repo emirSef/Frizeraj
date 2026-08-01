@@ -47,7 +47,7 @@ import {
 } from "../schemas/customer-schema";
 
 const fieldClassName =
-  "h-11 rounded-xl border-border bg-background px-3 text-sm shadow-none md:text-sm";
+  "h-11 rounded-sm border-border bg-background px-3 text-sm shadow-none md:text-sm";
 const selectTriggerClassName = cn(fieldClassName, "w-full");
 
 interface CustomerFormProps {
@@ -139,7 +139,7 @@ export function CustomerForm({
               type="button"
               variant="outline"
               disabled={isSubmitting}
-              className="h-10 rounded-xl"
+              className="h-10 rounded-sm"
               onClick={() => fileInputRef.current?.click()}
             >
               <UploadIcon className="size-4" />
@@ -430,7 +430,7 @@ export function CustomerForm({
                 <Textarea
                   placeholder={t("customers.enterNotes")}
                   disabled={isSubmitting}
-                  className="min-h-20 rounded-xl border-border bg-background px-3 py-3 text-sm shadow-none md:text-sm"
+                  className="min-h-20 rounded-sm border-border bg-background px-3 py-3 text-sm shadow-none md:text-sm"
                   {...field}
                 />
               </FormControl>
@@ -446,7 +446,7 @@ export function CustomerForm({
                 type="button"
                 variant="secondary"
                 disabled={isSubmitting}
-                className="h-11 w-full rounded-xl bg-muted text-foreground hover:bg-muted/80"
+                className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
               >
                 {t("common.cancel")}
               </Button>
@@ -455,7 +455,7 @@ export function CustomerForm({
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-11 w-full rounded-xl bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
+            className="h-11 w-full rounded-sm bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
           >
             {isSubmitting ? <Loader2Icon className="size-4 animate-spin" /> : null}
             {submitLabel || t("common.save")}
