@@ -63,6 +63,7 @@ export interface Database {
           country: string | null;
           city: string | null;
           notes: string | null;
+          personal_id: string | null;
           avatar_url: string | null;
           created_by: string | null;
           created_at: string;
@@ -79,6 +80,7 @@ export interface Database {
           country?: string | null;
           city?: string | null;
           notes?: string | null;
+          personal_id?: string | null;
           avatar_url?: string | null;
           created_by?: string | null;
           created_at?: string;
@@ -95,6 +97,7 @@ export interface Database {
           country?: string | null;
           city?: string | null;
           notes?: string | null;
+          personal_id?: string | null;
           avatar_url?: string | null;
           created_by?: string | null;
           created_at?: string;

@@ -9,6 +9,12 @@ export const GENDER_OPTIONS: ReadonlyArray<{ value: ClientGender; label: string 
   { value: "prefer_not_to_say", label: "Prefer not to say" },
 ];
 
+/** Gender choices shown as radios in the Add/Edit Customer dialog. */
+export const GENDER_RADIO_OPTIONS: ReadonlyArray<{ value: "male" | "female"; label: string }> = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+];
+
 const optionalText = (max: number) => z.string().trim().max(max).optional().or(z.literal(""));
 
 export const customerSchema = z.object({
@@ -21,7 +27,8 @@ export const customerSchema = z.object({
     .email("Enter a valid email address")
     .optional()
     .or(z.literal("")),
-  phone: optionalText(30),
+  phone: optionalText(40),
+  personal_id: optionalText(50),
   birth_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Use the date picker")
@@ -31,6 +38,7 @@ export const customerSchema = z.object({
   country: optionalText(100),
   city: optionalText(100),
   notes: optionalText(2000),
+  avatar_url: optionalText(1000),
 });
 
 export type CustomerFormValues = z.infer<typeof customerSchema>;
@@ -40,9 +48,11 @@ export const customerFormDefaults: CustomerFormValues = {
   last_name: "",
   email: "",
   phone: "",
+  personal_id: "",
   birth_date: "",
-  gender: null,
+  gender: "male",
   country: "",
   city: "",
   notes: "",
+  avatar_url: "",
 };
