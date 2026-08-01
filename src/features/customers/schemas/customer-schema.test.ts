@@ -42,12 +42,11 @@ describe("customerSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts avatar_url and personal_id", () => {
+  it("accepts avatar_url", () => {
     const result = customerSchema.safeParse({
       ...customerFormDefaults,
       first_name: "Ana",
       last_name: "Kovač",
-      personal_id: "ABC123",
       avatar_url: "https://example.com/avatar.jpg",
     });
     expect(result.success).toBe(true);

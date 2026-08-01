@@ -238,7 +238,7 @@ export function CustomerForm({
             control={form.control}
             name="phone"
             render={() => (
-              <FormItem>
+              <FormItem className="sm:col-span-2">
                 <FormLabel className="text-muted-foreground text-xs font-medium">Phone</FormLabel>
                 <div className="flex gap-2">
                   <Select
@@ -273,27 +273,6 @@ export function CustomerForm({
                     />
                   </FormControl>
                 </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="personal_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-muted-foreground text-xs font-medium">
-                  Personal ID / Passport
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter personal ID here"
-                    disabled={isSubmitting}
-                    className={fieldClassName}
-                    {...field}
-                  />
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

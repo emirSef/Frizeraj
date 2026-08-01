@@ -16,7 +16,6 @@ function toClientRow(values: CustomerFormValues): Omit<ClientInsert, "id" | "cre
     last_name: values.last_name.trim(),
     email: blankToNull(values.email),
     phone: blankToNull(values.phone),
-    personal_id: blankToNull(values.personal_id),
     birth_date: blankToNull(values.birth_date),
     gender: values.gender ?? null,
     country: blankToNull(values.country),
