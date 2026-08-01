@@ -24,6 +24,11 @@ set
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
+drop policy if exists "client_avatars_select_public" on storage.objects;
+drop policy if exists "client_avatars_insert_authenticated" on storage.objects;
+drop policy if exists "client_avatars_update_authenticated" on storage.objects;
+drop policy if exists "client_avatars_delete_authenticated" on storage.objects;
+
 create policy "client_avatars_select_public"
   on storage.objects for select
   to public
