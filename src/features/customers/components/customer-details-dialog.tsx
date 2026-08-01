@@ -92,7 +92,6 @@ export function CustomerDetailsDialog({
             <dl className="divide-y">
               <DetailRow label="Phone" value={customer.phone} />
               <DetailRow label="Email" value={customer.email} />
-              <DetailRow label="Personal ID" value={customer.personal_id} />
               <DetailRow label="City" value={customer.city} />
               <DetailRow label="Country" value={customer.country} />
               <DetailRow label="Gender" value={genderLabel(customer.gender)} />

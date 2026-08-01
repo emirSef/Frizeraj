@@ -29,7 +29,6 @@ function toFormValues(customer: CustomerListItem): CustomerFormValues {
     last_name: customer.last_name,
     email: customer.email ?? "",
     phone: customer.phone ?? "",
-    personal_id: customer.personal_id ?? "",
     birth_date: customer.birth_date ?? "",
     gender: customer.gender ?? "male",
     country: customer.country ?? "",

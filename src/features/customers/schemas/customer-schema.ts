@@ -28,7 +28,6 @@ export const customerSchema = z.object({
     .optional()
     .or(z.literal("")),
   phone: optionalText(40),
-  personal_id: optionalText(50),
   birth_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Use the date picker")
@@ -48,7 +47,6 @@ export const customerFormDefaults: CustomerFormValues = {
   last_name: "",
   email: "",
   phone: "",
-  personal_id: "",
   birth_date: "",
   gender: "male",
   country: "",
