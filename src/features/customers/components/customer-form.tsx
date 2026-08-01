@@ -118,15 +118,15 @@ export function CustomerForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-5">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-4">
-            <Avatar className="size-20 shrink-0 after:rounded-full" size="lg">
-              {previewUrl ? <AvatarImage src={previewUrl} alt={previewName || "Customer"} /> : null}
-              <AvatarFallback className="text-lg">
-                {previewName ? getInitials(previewName) : <UserRoundIcon className="size-7" />}
-              </AvatarFallback>
-            </Avatar>
+        <div className="flex items-center gap-4">
+          <Avatar className="size-24 shrink-0 after:rounded-full" size="lg">
+            {previewUrl ? <AvatarImage src={previewUrl} alt={previewName || "Customer"} /> : null}
+            <AvatarFallback className="text-xl">
+              {previewName ? getInitials(previewName) : <UserRoundIcon className="size-8" />}
+            </AvatarFallback>
+          </Avatar>
 
+          <div className="flex flex-col items-start gap-1.5">
             <input
               ref={fileInputRef}
               type="file"
@@ -145,8 +145,8 @@ export function CustomerForm({
               <UploadIcon className="size-4" />
               {t("customers.uploadImage")}
             </Button>
+            <p className="text-muted-foreground text-xs">{t("customers.uploadHint")}</p>
           </div>
-          <p className="text-muted-foreground pl-24 text-xs">{t("customers.uploadHint")}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
