@@ -42,6 +42,18 @@ export async function fetchCustomers(params: CustomerListParams): Promise<Custom
     query = query.order("last_name", { ascending: params.sortOrder === "asc" });
   }
 
+  // "active"/"new" is derived from whether the embedded appointments exist, so
+  // both branches filter the parent rows through the embedded resource.
+  if (params.status === "active") {
+    query = query.not("appointments", "is", null);
+  } else if (params.status === "new") {
+    query = query.is("appointments", null);
+  }
+
+  if (params.gender !== "all") {
+    query = query.eq("gender", params.gender);
+  }
+
   const search = sanitizeSearch(params.search);
   if (search) {
     query = query.or(

@@ -1,17 +1,27 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { format } from "date-fns";
 import { ScissorsIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { APP_NAME } from "@/lib/constants";
+import { APP_NAME, ROUTES } from "@/lib/constants";
+import { MiniCalendar } from "@/components/shared/mini-calendar";
 import { NAV_ITEMS } from "@/components/layout/nav-items";
 import { useTranslations } from "@/i18n";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations();
+  const [pickedDate, setPickedDate] = React.useState<Date | null>(null);
+
+  function handleSelectDate(date: Date) {
+    setPickedDate(date);
+    router.push(`${ROUTES.calendar}?date=${format(date, "yyyy-MM-dd")}`);
+  }
 
   return (
     <aside className="bg-sidebar hidden w-60 shrink-0 flex-col border-r md:flex">
@@ -20,6 +30,10 @@ export function AppSidebar() {
           <ScissorsIcon className="size-4" />
         </div>
         <span className="text-sm font-semibold tracking-tight">{APP_NAME}</span>
+      </div>
+
+      <div className="border-b p-3">
+        <MiniCalendar selected={pickedDate} onSelect={handleSelectDate} />
       </div>
 
       <nav className="flex-1 space-y-1 p-3" aria-label={t("nav.main")}>

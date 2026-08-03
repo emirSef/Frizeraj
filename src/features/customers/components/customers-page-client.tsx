@@ -1,27 +1,31 @@
 "use client";
 
 import * as React from "react";
-import {
-  getCoreRowModel,
-  useReactTable,
-  type SortingState,
-} from "@tanstack/react-table";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { getCoreRowModel, useReactTable, type SortingState } from "@tanstack/react-table";
+import { PlusIcon } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { useTranslations } from "@/i18n";
 import { getCustomerColumns } from "./customer-columns";
 import { CustomerDetailsDialog } from "./customer-details-dialog";
 import { CustomerFormDialog } from "./customer-form-dialog";
+import { CustomersGrid } from "./customers-grid";
 import { CustomersTable } from "./customers-table";
+import { CustomersToolbar } from "./customers-toolbar";
 import { useCustomers } from "../hooks/use-customers";
 import { useDeleteCustomer } from "../hooks/use-customer-mutations";
-import type { CustomerListItem, CustomerSortField } from "../types";
+import {
+  DEFAULT_CUSTOMER_FILTERS,
+  type CustomerFilters,
+  type CustomerListItem,
+  type CustomerSortField,
+  type CustomerViewMode,
+  type SortOrder,
+} from "../types";
 
 export function CustomersPageClient() {
   const t = useTranslations();
@@ -31,6 +35,8 @@ export function CustomersPageClient() {
   const [page, setPage] = React.useState(1);
   const pageSize = DEFAULT_PAGE_SIZE;
   const [sorting, setSorting] = React.useState<SortingState>([{ id: "name", desc: false }]);
+  const [filters, setFilters] = React.useState<CustomerFilters>(DEFAULT_CUSTOMER_FILTERS);
+  const [view, setView] = React.useState<CustomerViewMode>("list");
 
   const [formOpen, setFormOpen] = React.useState(false);
   const [editingCustomer, setEditingCustomer] = React.useState<CustomerListItem | null>(null);
@@ -38,12 +44,12 @@ export function CustomersPageClient() {
   const [detailsCustomer, setDetailsCustomer] = React.useState<CustomerListItem | null>(null);
 
   const sortField = (sorting[0]?.id ?? "name") as CustomerSortField;
-  const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+  const sortOrder: SortOrder = sorting[0]?.desc ? "desc" : "asc";
 
   // Reset to the first page whenever the query inputs change.
   React.useEffect(() => {
     setPage(1);
-  }, [search, sortField, sortOrder]);
+  }, [search, sortField, sortOrder, filters]);
 
   const { data, isLoading, isFetching } = useCustomers({
     search,
@@ -51,6 +57,7 @@ export function CustomersPageClient() {
     pageSize,
     sortField,
     sortOrder,
+    ...filters,
   });
 
   const deleteCustomer = useDeleteCustomer();
@@ -85,6 +92,13 @@ export function CustomersPageClient() {
       }
     },
     [deleteCustomer, t],
+  );
+
+  const handleSortChange = React.useCallback(
+    (nextField: CustomerSortField, nextOrder: SortOrder) => {
+      setSorting([{ id: nextField, desc: nextOrder === "desc" }]);
+    },
+    [],
   );
 
   const columns = React.useMemo(
@@ -125,23 +139,30 @@ export function CustomersPageClient() {
       />
 
       <Card className="gap-0 p-0">
-        <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full sm:max-w-xs">
-            <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
-            <Input
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder={t("customers.searchPlaceholder")}
-              className="pl-8"
-              aria-label={t("customers.searchPlaceholder")}
-            />
-          </div>
-          {isFetching ? (
-            <span className="text-muted-foreground text-xs">{t("customers.updating")}</span>
-          ) : null}
-        </div>
+        <CustomersToolbar
+          search={searchInput}
+          onSearchChange={setSearchInput}
+          view={view}
+          onViewChange={setView}
+          sortField={sortField}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
+          filters={filters}
+          onFiltersChange={setFilters}
+          isFetching={isFetching}
+        />
 
-        <CustomersTable table={table} isLoading={isLoading} onRowClick={handleView} />
+        {view === "list" ? (
+          <CustomersTable table={table} isLoading={isLoading} onRowClick={handleView} />
+        ) : (
+          <CustomersGrid
+            customers={rows}
+            isLoading={isLoading}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
 
         <div className="flex flex-col items-center justify-between gap-3 border-t p-4 sm:flex-row">
           <p className="text-muted-foreground text-sm">
