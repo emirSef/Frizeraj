@@ -17,7 +17,11 @@ export function EmptyState({ icon: Icon, title, description, action, className }
   return (
     <div
       className={cn(
+<<<<<<< HEAD
         "flex flex-col items-center justify-center rounded-sm border border-dashed p-12 text-center",
+=======
+        "flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center",
+>>>>>>> 6691118 (Add customers list/grid toolbar, filters, and sidebar mini calendar.)
         className,
       )}
     >
