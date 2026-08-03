@@ -2,12 +2,9 @@
 
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { endOfWeek, format, startOfWeek, subDays } from "date-fns";
+import { endOfWeek, format, parseISO, startOfWeek, subDays } from "date-fns";
 import { Loader2Icon, PlusIcon } from "lucide-react";
-import type {
-  DatesSetArg,
-  EventDropArg,
-} from "@fullcalendar/core";
+import type { DatesSetArg, EventDropArg } from "@fullcalendar/core";
 import type { EventResizeDoneArg } from "@fullcalendar/interaction";
 
 import { Button } from "@/components/ui/button";
@@ -42,12 +39,20 @@ const AppointmentCalendar = dynamic(
 const DATE_FMT = "yyyy-MM-dd";
 const TIME_FMT = "HH:mm:ss";
 
-export function CalendarPageClient() {
+interface CalendarPageClientProps {
+  /** `yyyy-MM-dd` day to open on; defaults to the current week. */
+  initialDate?: string;
+}
+
+export function CalendarPageClient({ initialDate }: CalendarPageClientProps) {
   const t = useTranslations();
-  const today = useMemo(() => new Date(), []);
+  const focusDate = useMemo(
+    () => (initialDate ? parseISO(initialDate) : new Date()),
+    [initialDate],
+  );
   const [range, setRange] = useState<DateRange>(() => ({
-    start: format(startOfWeek(today, { weekStartsOn: 1 }), DATE_FMT),
-    end: format(endOfWeek(today, { weekStartsOn: 1 }), DATE_FMT),
+    start: format(startOfWeek(focusDate, { weekStartsOn: 1 }), DATE_FMT),
+    end: format(endOfWeek(focusDate, { weekStartsOn: 1 }), DATE_FMT),
   }));
 
   const [formOpen, setFormOpen] = useState(false);
@@ -147,7 +152,7 @@ export function CalendarPageClient() {
   function openCreate() {
     setEditing(null);
     setCreateDefaults({
-      date: format(today, DATE_FMT),
+      date: format(focusDate, DATE_FMT),
       start_time: "09:00",
     });
     setFormOpen(true);
@@ -174,6 +179,7 @@ export function CalendarPageClient() {
           </div>
         ) : null}
         <AppointmentCalendar
+          initialDate={focusDate}
           appointments={appointments}
           onSelectSlot={handleSelectSlot}
           onSelectEvent={handleSelectEvent}
