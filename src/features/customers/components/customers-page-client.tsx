@@ -69,6 +69,14 @@ export function CustomersPageClient() {
     setFormOpen(true);
   }, []);
 
+  const handleEditFromDetails = React.useCallback(
+    (customer: CustomerListItem) => {
+      setDetailsOpen(false);
+      handleEdit(customer);
+    },
+    [handleEdit],
+  );
+
   const handleDelete = React.useCallback(
     (customer: CustomerListItem) => {
       const name = `${customer.first_name} ${customer.last_name}`.trim();
@@ -170,6 +178,7 @@ export function CustomersPageClient() {
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
         customer={detailsCustomer}
+        onEdit={handleEditFromDetails}
       />
     </div>
   );
