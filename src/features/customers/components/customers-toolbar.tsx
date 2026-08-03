@@ -4,7 +4,7 @@ import {
   ArrowDownWideNarrowIcon,
   LayoutGridIcon,
   ListFilterIcon,
-  ListIcon,
+  Rows2Icon,
   SearchIcon,
 } from "lucide-react";
 
@@ -106,13 +106,20 @@ export function CustomersToolbar({
             const next = value[0] as CustomerViewMode | undefined;
             if (next) onViewChange(next);
           }}
+          className="bg-transparent h-auto gap-8 rounded-none p-0"
         >
-          <ToggleGroupItem value="list">
-            <ListIcon />
+          <ToggleGroupItem
+            value="list"
+            className="text-muted-foreground data-pressed:text-foreground relative h-auto gap-2 rounded-none border-0 bg-transparent px-0 py-2 text-sm font-medium shadow-none hover:bg-transparent data-pressed:bg-transparent data-pressed:shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-foreground after:opacity-0 data-pressed:after:opacity-100"
+          >
+            <Rows2Icon className="size-4" strokeWidth={1.75} />
             {t("customers.listView")}
           </ToggleGroupItem>
-          <ToggleGroupItem value="grid">
-            <LayoutGridIcon />
+          <ToggleGroupItem
+            value="grid"
+            className="text-muted-foreground data-pressed:text-foreground relative h-auto gap-2 rounded-none border-0 bg-transparent px-0 py-2 text-sm font-medium shadow-none hover:bg-transparent data-pressed:bg-transparent data-pressed:shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-foreground after:opacity-0 data-pressed:after:opacity-100"
+          >
+            <LayoutGridIcon className="size-4" strokeWidth={1.75} />
             {t("customers.gridView")}
           </ToggleGroupItem>
         </ToggleGroup>
@@ -126,7 +133,7 @@ export function CustomersToolbar({
               </Button>
             }
           />
-          <DropdownMenuContent align="end" className="w-48 rounded-xl">
+          <DropdownMenuContent align="end" className="w-48 rounded-sm">
             <DropdownMenuRadioGroup
               value={sortField}
               onValueChange={(value) => onSortChange(value as CustomerSortField, sortOrder)}
@@ -166,7 +173,7 @@ export function CustomersToolbar({
               </Button>
             }
           />
-          <DropdownMenuContent align="end" className="w-48 rounded-xl">
+          <DropdownMenuContent align="end" className="w-48 rounded-sm">
             <DropdownMenuRadioGroup
               value={filters.status}
               onValueChange={(value) =>
