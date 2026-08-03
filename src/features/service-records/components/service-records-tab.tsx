@@ -30,7 +30,7 @@ function RecordImages({ record }: { record: ClientServiceRecord }) {
             <img
               src={record.before_image_url}
               alt="Before"
-              className="size-24 rounded-lg border object-cover"
+              className="size-24 rounded-sm border object-cover"
             />
           </a>
           <figcaption className="text-muted-foreground text-center text-xs">Before</figcaption>
@@ -43,7 +43,7 @@ function RecordImages({ record }: { record: ClientServiceRecord }) {
             <img
               src={record.after_image_url}
               alt="After"
-              className="size-24 rounded-lg border object-cover"
+              className="size-24 rounded-sm border object-cover"
             />
           </a>
           <figcaption className="text-muted-foreground text-center text-xs">After</figcaption>
@@ -80,7 +80,7 @@ export function ServiceRecordsTab({ clientId }: { clientId: string | null }) {
   return (
     <div className="max-h-96 space-y-3 overflow-y-auto py-1">
       {records.map((record) => (
-        <div key={record.id} className="rounded-lg border p-3">
+        <div key={record.id} className="rounded-sm border p-3">
           <div className="mb-2 flex items-center justify-between gap-2">
             <span className="text-sm font-medium">{formatDate(serviceRecordDate(record))}</span>
             {record.service?.name ? (

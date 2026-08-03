@@ -35,7 +35,7 @@ import { addMinutesToTime, type CalendarClient, type CalendarService } from "../
 import { CustomerCombobox } from "./customer-combobox";
 
 const fieldClassName =
-  "h-11 rounded-xl border-border bg-background px-3 text-sm shadow-none md:text-sm";
+  "h-11 rounded-sm border-border bg-background px-3 text-sm shadow-none md:text-sm";
 const selectTriggerClassName = cn(fieldClassName, "w-full");
 
 interface AppointmentFormProps {
@@ -299,7 +299,7 @@ export function AppointmentForm({
                     placeholder={t("calendar.enterNote")}
                     disabled={isSubmitting}
                     maxLength={NOTES_MAX_LENGTH}
-                    className="min-h-28 resize-none rounded-xl border-border bg-background px-3 py-3 pb-8 text-sm shadow-none md:text-sm"
+                    className="min-h-28 resize-none rounded-sm border-border bg-background px-3 py-3 pb-8 text-sm shadow-none md:text-sm"
                     {...field}
                   />
                   <span className="text-muted-foreground pointer-events-none absolute right-3 bottom-2.5 text-xs tabular-nums">
@@ -363,7 +363,7 @@ export function AppointmentForm({
                 type="button"
                 variant="secondary"
                 disabled={isSubmitting}
-                className="h-11 w-full rounded-xl bg-muted text-foreground hover:bg-muted/80"
+                className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
               >
                 {t("common.cancel")}
               </Button>
@@ -372,7 +372,7 @@ export function AppointmentForm({
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-11 w-full rounded-xl bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
+            className="h-11 w-full rounded-sm bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
           >
             {isSubmitting ? <Loader2Icon className="size-4 animate-spin" /> : null}
             {submitLabel || t("common.save")}
