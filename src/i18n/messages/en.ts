@@ -76,6 +76,7 @@ export const en = {
     tryAdjustSearch: "Try adjusting your search…",
     uploadImage: "Upload Image",
     uploadHint: "JPG, PNG, WEBP or GIF up to 5 MB",
+    viewPhoto: "View photo",
     firstName: "First Name",
     lastName: "Last Name",
     birthDate: "Birth Date",
