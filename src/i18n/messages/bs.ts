@@ -78,6 +78,7 @@ export const bs: Messages = {
     tryAdjustSearch: "Pokušajte prilagoditi pretragu…",
     uploadImage: "Učitaj sliku",
     uploadHint: "JPG, PNG, WEBP ili GIF do 5 MB",
+    viewPhoto: "Pogledaj fotografiju",
     firstName: "Ime",
     lastName: "Prezime",
     birthDate: "Datum rođenja",
