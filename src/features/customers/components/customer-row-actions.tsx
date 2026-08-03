@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "@/i18n";
 import type { CustomerListItem } from "../types";
 
 interface CustomerRowActionsProps {
@@ -25,30 +26,39 @@ export function CustomerRowActions({
   onEdit,
   onDelete,
 }: CustomerRowActionsProps) {
+  const t = useTranslations();
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" size="icon-sm" aria-label="Open actions">
-            <MoreVerticalIcon className="size-4" />
-          </Button>
-        }
-      />
-      <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuItem onClick={() => onView(customer)}>
-          <EyeIcon className="size-4" />
-          View details
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onEdit(customer)}>
-          <PencilIcon className="size-4" />
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={() => onDelete(customer)}>
-          <Trash2Icon className="size-4" />
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t("customers.viewDetails")}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <MoreVerticalIcon className="size-4" />
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuItem onClick={() => onView(customer)}>
+            <EyeIcon className="size-4" />
+            {t("customers.viewDetails")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onEdit(customer)}>
+            <PencilIcon className="size-4" />
+            {t("common.edit")}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive" onClick={() => onDelete(customer)}>
+            <Trash2Icon className="size-4" />
+            {t("common.delete")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

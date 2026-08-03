@@ -1,15 +1,23 @@
 "use client";
 
 import type { Column, ColumnDef } from "@tanstack/react-table";
-import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon } from "lucide-react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronsUpDownIcon,
+  MailIcon,
+  MapPinIcon,
+  MarsIcon,
+  PhoneIcon,
+  VenusIcon,
+} from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { formatDate, getInitials } from "@/utils/format";
+import { getInitials } from "@/utils/format";
+import { GENDER_OPTIONS } from "../schemas/customer-schema";
 import { CustomerRowActions } from "./customer-row-actions";
-import { CustomerStatusBadge } from "./customer-status-badge";
-import { getCustomerStatus, type CustomerListItem } from "../types";
+import type { CustomerListItem } from "../types";
 
 function SortableHeader({
   column,
@@ -20,11 +28,12 @@ function SortableHeader({
 }) {
   const sorted = column.getIsSorted();
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-2 h-7 gap-1 data-[sorted=true]:text-foreground"
-      data-sorted={Boolean(sorted)}
+    <button
+      type="button"
+      className={cn(
+        "text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs font-medium tracking-wide uppercase transition-colors",
+        sorted && "text-foreground",
+      )}
       onClick={column.getToggleSortingHandler()}
     >
       {label}
@@ -33,10 +42,21 @@ function SortableHeader({
       ) : sorted === "desc" ? (
         <ArrowDownIcon className="size-3.5" />
       ) : (
-        <ArrowUpDownIcon className="text-muted-foreground size-3.5" />
+        <ChevronsUpDownIcon className="size-3.5 opacity-60" />
       )}
-    </Button>
+    </button>
   );
+}
+
+function genderMeta(value: string | null) {
+  const label = GENDER_OPTIONS.find((option) => option.value === value)?.label ?? "—";
+  if (value === "female") {
+    return { label, Icon: VenusIcon };
+  }
+  if (value === "male") {
+    return { label, Icon: MarsIcon };
+  }
+  return { label, Icon: null };
 }
 
 interface ColumnHandlers {
@@ -48,80 +68,109 @@ interface ColumnHandlers {
 export function getCustomerColumns(handlers: ColumnHandlers): ColumnDef<CustomerListItem>[] {
   return [
     {
-      id: "avatar",
-      header: "",
-      enableSorting: false,
+      id: "name",
+      header: ({ column }) => <SortableHeader column={column} label="Name" />,
       cell: ({ row }) => {
-        const c = row.original;
-        const fullName = `${c.first_name} ${c.last_name}`.trim();
+        const customer = row.original;
+        const fullName = `${customer.first_name} ${customer.last_name}`.trim();
         return (
-          <Avatar size="sm">
-            {c.avatar_url ? <AvatarImage src={c.avatar_url} alt={fullName} /> : null}
-            <AvatarFallback>{getInitials(fullName)}</AvatarFallback>
-          </Avatar>
+          <div className="flex items-center gap-3">
+            <Avatar size="sm">
+              {customer.avatar_url ? (
+                <AvatarImage src={customer.avatar_url} alt={fullName} />
+              ) : null}
+              <AvatarFallback>{getInitials(fullName)}</AvatarFallback>
+            </Avatar>
+            <span className="text-foreground font-semibold whitespace-nowrap">{fullName}</span>
+          </div>
         );
       },
-    },
-    {
-      id: "name",
-      header: ({ column }) => <SortableHeader column={column} label="Full Name" />,
-      cell: ({ row }) => (
-        <span className="font-medium whitespace-nowrap">
-          {`${row.original.first_name} ${row.original.last_name}`.trim()}
-        </span>
-      ),
     },
     {
       id: "email",
       accessorKey: "email",
       header: ({ column }) => <SortableHeader column={column} label="Email" />,
-      cell: ({ row }) => (
-        <span className="text-muted-foreground">{row.original.email ?? "—"}</span>
-      ),
+      cell: ({ row }) => {
+        const email = row.original.email;
+        if (!email) {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        return (
+          <span className="text-muted-foreground inline-flex items-center gap-2">
+            <MailIcon className="size-3.5 shrink-0" />
+            <span className="text-foreground underline underline-offset-2">{email}</span>
+          </span>
+        );
+      },
     },
     {
       id: "phone",
       accessorKey: "phone",
       header: ({ column }) => <SortableHeader column={column} label="Phone" />,
-      cell: ({ row }) => (
-        <span className="whitespace-nowrap">{row.original.phone ?? "—"}</span>
-      ),
+      cell: ({ row }) => {
+        const phone = row.original.phone;
+        if (!phone) {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        return (
+          <span className="text-muted-foreground inline-flex items-center gap-2 whitespace-nowrap">
+            <PhoneIcon className="size-3.5 shrink-0" />
+            {phone}
+          </span>
+        );
+      },
     },
     {
       id: "city",
       accessorKey: "city",
-      header: ({ column }) => <SortableHeader column={column} label="City" />,
-      cell: ({ row }) => <span>{row.original.city ?? "—"}</span>,
+      header: ({ column }) => <SortableHeader column={column} label="Location" />,
+      cell: ({ row }) => {
+        const city = row.original.city;
+        if (!city) {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        return (
+          <span className="text-muted-foreground inline-flex items-center gap-2 whitespace-nowrap">
+            <MapPinIcon className="size-3.5 shrink-0" />
+            {city}
+          </span>
+        );
+      },
     },
     {
-      id: "last_appointment",
-      header: "Last Appointment",
-      enableSorting: false,
-      cell: ({ row }) => (
-        <span className={cn(!row.original.last_appointment && "text-muted-foreground")}>
-          {row.original.last_appointment ? formatDate(row.original.last_appointment) : "—"}
+      id: "gender",
+      accessorKey: "gender",
+      header: () => (
+        <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+          Gender
         </span>
       ),
-    },
-    {
-      id: "status",
-      header: "Status",
       enableSorting: false,
-      cell: ({ row }) => <CustomerStatusBadge status={getCustomerStatus(row.original)} />,
+      cell: ({ row }) => {
+        const { label, Icon } = genderMeta(row.original.gender);
+        return (
+          <span className="text-muted-foreground inline-flex items-center gap-2 whitespace-nowrap">
+            {Icon ? <Icon className="size-3.5 shrink-0" /> : null}
+            {label}
+          </span>
+        );
+      },
     },
     {
       id: "actions",
-      header: "",
+      header: () => (
+        <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+          Action
+        </span>
+      ),
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex justify-end">
-          <CustomerRowActions
-            customer={row.original}
-            onView={handlers.onView}
-            onEdit={handlers.onEdit}
-            onDelete={handlers.onDelete}
-          />
-        </div>
+        <CustomerRowActions
+          customer={row.original}
+          onView={handlers.onView}
+          onEdit={handlers.onEdit}
+          onDelete={handlers.onDelete}
+        />
       ),
     },
   ];
