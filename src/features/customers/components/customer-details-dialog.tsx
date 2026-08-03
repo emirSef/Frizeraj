@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarX2Icon, PencilIcon } from "lucide-react";
+import { CalendarPlusIcon, CalendarX2Icon, PencilIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ interface CustomerDetailsDialogProps {
   onOpenChange: (open: boolean) => void;
   customer: CustomerListItem | null;
   onEdit: (customer: CustomerListItem) => void;
+  onNewAppointment: (customer: CustomerListItem) => void;
 }
 
 function genderLabel(value: string | null): string {
@@ -54,6 +55,7 @@ export function CustomerDetailsDialog({
   onOpenChange,
   customer,
   onEdit,
+  onNewAppointment,
 }: CustomerDetailsDialogProps) {
   const t = useTranslations();
   const appointmentsQuery = useCustomerAppointments(open ? (customer?.id ?? null) : null);
@@ -164,10 +166,14 @@ export function CustomerDetailsDialog({
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end pt-2">
+        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={() => onEdit(customer)}>
             <PencilIcon className="size-4" />
             {t("customers.edit")}
+          </Button>
+          <Button type="button" onClick={() => onNewAppointment(customer)}>
+            <CalendarPlusIcon className="size-4" />
+            {t("calendar.newAppointment")}
           </Button>
         </div>
       </DialogContent>

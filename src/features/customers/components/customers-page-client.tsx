@@ -2,11 +2,14 @@
 
 import * as React from "react";
 import { getCoreRowModel, useReactTable, type SortingState } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { PlusIcon } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { AppointmentFormDialog } from "@/features/calendar/components/appointment-form-dialog";
+import type { AppointmentFormValues } from "@/features/calendar/schemas/appointment-schema";
 import { useDebounce } from "@/hooks/use-debounce";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { useTranslations } from "@/i18n";
@@ -42,6 +45,10 @@ export function CustomersPageClient() {
   const [editingCustomer, setEditingCustomer] = React.useState<CustomerListItem | null>(null);
   const [detailsOpen, setDetailsOpen] = React.useState(false);
   const [detailsCustomer, setDetailsCustomer] = React.useState<CustomerListItem | null>(null);
+  const [appointmentFormOpen, setAppointmentFormOpen] = React.useState(false);
+  const [appointmentDefaults, setAppointmentDefaults] = React.useState<
+    Partial<AppointmentFormValues> | undefined
+  >(undefined);
 
   const sortField = (sorting[0]?.id ?? "name") as CustomerSortField;
   const sortOrder: SortOrder = sorting[0]?.desc ? "desc" : "asc";
@@ -83,6 +90,16 @@ export function CustomersPageClient() {
     },
     [handleEdit],
   );
+
+  const handleNewAppointmentFromDetails = React.useCallback((customer: CustomerListItem) => {
+    setDetailsOpen(false);
+    setAppointmentDefaults({
+      client_id: customer.id,
+      date: format(new Date(), "yyyy-MM-dd"),
+      start_time: "09:00",
+    });
+    setAppointmentFormOpen(true);
+  }, []);
 
   const handleDelete = React.useCallback(
     (customer: CustomerListItem) => {
@@ -200,6 +217,12 @@ export function CustomersPageClient() {
         onOpenChange={setDetailsOpen}
         customer={detailsCustomer}
         onEdit={handleEditFromDetails}
+        onNewAppointment={handleNewAppointmentFromDetails}
+      />
+      <AppointmentFormDialog
+        open={appointmentFormOpen}
+        onOpenChange={setAppointmentFormOpen}
+        defaults={appointmentDefaults}
       />
     </div>
   );
