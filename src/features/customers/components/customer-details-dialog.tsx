@@ -87,11 +87,23 @@ export function CustomerDetailsDialog({
         </div>
 
         <Tabs defaultValue="overview" className="mt-2">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="appointments">Appointment History</TabsTrigger>
-            <TabsTrigger value="records">Service Records</TabsTrigger>
-          </TabsList>
+          <div className="bg-muted inline-flex h-8 w-fit flex-wrap items-center justify-center rounded-lg p-[3px]">
+            <TabsList className="h-full bg-transparent p-0">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="appointments">Appointment History</TabsTrigger>
+              <TabsTrigger value="records">Service Records</TabsTrigger>
+            </TabsList>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-foreground/60 hover:text-foreground h-[calc(100%-1px)] gap-1.5 rounded-md px-1.5 py-0.5 text-sm font-medium shadow-none"
+              onClick={() => onEdit(customer)}
+            >
+              <PencilIcon className="size-4" />
+              {t("customers.edit")}
+            </Button>
+          </div>
 
           <TabsContent value="overview">
             <dl className="divide-y">
@@ -161,13 +173,6 @@ export function CustomerDetailsDialog({
             <ServiceRecordsTab clientId={open ? customer.id : null} />
           </TabsContent>
         </Tabs>
-
-        <div className="flex justify-end pt-2">
-          <Button type="button" variant="outline" onClick={() => onEdit(customer)}>
-            <PencilIcon className="size-4" />
-            {t("customers.edit")}
-          </Button>
-        </div>
       </DialogContent>
     </Dialog>
   );
