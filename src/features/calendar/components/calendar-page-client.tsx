@@ -166,9 +166,9 @@ export function CalendarPageClient() {
         }
       />
 
-      <div className="bg-card relative min-h-[32rem] flex-1 rounded-xl border p-3">
+      <div className="bg-card relative min-h-[32rem] flex-1 rounded-sm border p-3">
         {appointmentsQuery.isFetching ? (
-          <div className="text-muted-foreground bg-background/80 absolute top-4 right-5 z-10 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs">
+          <div className="text-muted-foreground bg-background/80 absolute top-4 right-5 z-10 flex items-center gap-1.5 rounded-sm px-2 py-1 text-xs">
             <Loader2Icon className="size-3 animate-spin" />
             {t("calendar.updating")}
           </div>

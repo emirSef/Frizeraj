@@ -18,7 +18,7 @@ export function LoginPageClient() {
       </div>
       <div className="w-full max-w-sm space-y-6">
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="bg-primary text-primary-foreground flex size-11 items-center justify-center rounded-xl">
+          <div className="bg-primary text-primary-foreground flex size-11 items-center justify-center rounded-sm">
             <ScissorsIcon className="size-6" />
           </div>
           <h1 className="text-xl font-semibold tracking-tight">{APP_NAME}</h1>

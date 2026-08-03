@@ -116,7 +116,7 @@ export function CustomerDetailsDialog({
                 ))}
               </div>
             ) : appointments.length ? (
-              <div className="max-h-80 min-w-0 overflow-auto rounded-lg border">
+              <div className="max-h-80 min-w-0 overflow-auto rounded-sm border">
                 <Table className="table-fixed">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">

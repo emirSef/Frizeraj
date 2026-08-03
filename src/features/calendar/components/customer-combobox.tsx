@@ -61,7 +61,7 @@ export function CustomerCombobox({
     <div ref={containerRef} className="relative">
       <div
         className={cn(
-          "border-input bg-background flex h-11 items-center gap-2 rounded-xl border px-3 transition-colors",
+          "border-input bg-background flex h-11 items-center gap-2 rounded-sm border px-3 transition-colors",
           open && "border-ring ring-ring/50 ring-3",
           invalid && "border-destructive ring-destructive/20 ring-3",
           disabled && "pointer-events-none opacity-50",
@@ -96,7 +96,7 @@ export function CustomerCombobox({
       </div>
 
       {open ? (
-        <div className="bg-popover text-popover-foreground absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-56 w-full overflow-y-auto rounded-xl border shadow-md">
+        <div className="bg-popover text-popover-foreground absolute top-[calc(100%+0.35rem)] left-0 z-50 max-h-56 w-full overflow-y-auto rounded-sm border shadow-md">
           {filtered.length === 0 ? (
             <p className="text-muted-foreground px-3 py-2.5 text-sm">
               {t("calendar.noCustomersFound")}
@@ -111,7 +111,7 @@ export function CustomerCombobox({
                     <button
                       type="button"
                       className={cn(
-                        "hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-lg px-3 py-2 text-left text-sm",
+                        "hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-sm px-3 py-2 text-left text-sm",
                         isSelected && "bg-accent text-accent-foreground",
                       )}
                       onMouseDown={(event) => event.preventDefault()}

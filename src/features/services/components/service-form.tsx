@@ -122,7 +122,7 @@ export function ServiceForm({
                       value={/^#[0-9a-fA-F]{6}$/.test(field.value) ? field.value : "#6366f1"}
                       onChange={(event) => field.onChange(event.target.value)}
                       disabled={isSubmitting}
-                      className="border-input h-9 w-12 shrink-0 cursor-pointer rounded-lg border bg-transparent p-1 disabled:opacity-50"
+                      className="border-input h-9 w-12 shrink-0 cursor-pointer rounded-sm border bg-transparent p-1 disabled:opacity-50"
                     />
                     <Input placeholder="#6366f1" disabled={isSubmitting} {...field} />
                   </div>
