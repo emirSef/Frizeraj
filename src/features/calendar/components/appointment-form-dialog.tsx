@@ -83,7 +83,10 @@ export function AppointmentFormDialog({
 
         <div className="px-6 py-5">
           <AppointmentForm
-            key={appointment?.id ?? `new-${formValues.date}-${formValues.start_time}`}
+            key={
+              appointment?.id ??
+              `new-${formValues.client_id}-${formValues.date}-${formValues.start_time}`
+            }
             defaultValues={formValues}
             services={servicesQuery.data ?? []}
             clients={clientsQuery.data ?? []}
