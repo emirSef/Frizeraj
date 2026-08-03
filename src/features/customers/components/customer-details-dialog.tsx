@@ -65,7 +65,7 @@ export function CustomerDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="overflow-hidden sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t("customers.customerDetails")}</DialogTitle>
           <DialogDescription className="sr-only">
@@ -108,7 +108,7 @@ export function CustomerDetailsDialog({
             </dl>
           </TabsContent>
 
-          <TabsContent value="appointments">
+          <TabsContent value="appointments" className="min-w-0">
             {appointmentsQuery.isLoading ? (
               <div className="space-y-2 py-2">
                 {Array.from({ length: 4 }).map((_, index) => (
@@ -116,15 +116,15 @@ export function CustomerDetailsDialog({
                 ))}
               </div>
             ) : appointments.length ? (
-              <div className="max-h-80 overflow-y-auto rounded-lg border">
-                <Table>
+              <div className="max-h-80 min-w-0 overflow-auto rounded-lg border">
+                <Table className="table-fixed">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead>Date</TableHead>
+                      <TableHead className="w-[7rem]">Date</TableHead>
                       <TableHead>Treatment</TableHead>
                       <TableHead>Products</TableHead>
                       <TableHead>Notes</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
+                      <TableHead className="w-[5rem] text-right">Price</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -133,11 +133,13 @@ export function CustomerDetailsDialog({
                         <TableCell className="whitespace-nowrap">
                           {formatDate(appointment.date)}
                         </TableCell>
-                        <TableCell>{appointment.treatment ?? appointment.service?.name ?? "—"}</TableCell>
-                        <TableCell className="text-muted-foreground">
+                        <TableCell className="truncate">
+                          {appointment.treatment ?? appointment.service?.name ?? "—"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground truncate">
                           {appointment.products ?? "—"}
                         </TableCell>
-                        <TableCell className="text-muted-foreground max-w-[220px]">
+                        <TableCell className="text-muted-foreground truncate">
                           {appointment.notes ?? "—"}
                         </TableCell>
                         <TableCell className="text-right whitespace-nowrap">
