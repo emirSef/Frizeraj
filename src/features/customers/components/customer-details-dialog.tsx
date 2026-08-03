@@ -1,8 +1,9 @@
 "use client";
 
-import { CalendarX2Icon } from "lucide-react";
+import { CalendarX2Icon, PencilIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ServiceRecordsTab } from "@/features/service-records";
+import { useTranslations } from "@/i18n";
 import { formatDate, getInitials } from "@/utils/format";
 import { GENDER_OPTIONS } from "../schemas/customer-schema";
 import { useCustomerAppointments } from "../hooks/use-customer-appointments";
@@ -31,6 +33,7 @@ interface CustomerDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customer: CustomerListItem | null;
+  onEdit: (customer: CustomerListItem) => void;
 }
 
 function genderLabel(value: string | null): string {
@@ -50,7 +53,9 @@ export function CustomerDetailsDialog({
   open,
   onOpenChange,
   customer,
+  onEdit,
 }: CustomerDetailsDialogProps) {
+  const t = useTranslations();
   const appointmentsQuery = useCustomerAppointments(open ? (customer?.id ?? null) : null);
 
   if (!customer) return null;
@@ -62,7 +67,7 @@ export function CustomerDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Customer details</DialogTitle>
+          <DialogTitle>{t("customers.customerDetails")}</DialogTitle>
           <DialogDescription className="sr-only">
             View {fullName}&apos;s profile and appointment history.
           </DialogDescription>
@@ -156,6 +161,13 @@ export function CustomerDetailsDialog({
             <ServiceRecordsTab clientId={open ? customer.id : null} />
           </TabsContent>
         </Tabs>
+
+        <div className="flex justify-end pt-2">
+          <Button type="button" variant="outline" onClick={() => onEdit(customer)}>
+            <PencilIcon className="size-4" />
+            {t("customers.edit")}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
