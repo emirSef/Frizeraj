@@ -29,6 +29,7 @@ function contrastText(hex: string): string {
 
 interface AppointmentCalendarProps {
   appointments: CalendarAppointment[];
+  initialDate?: Date;
   onSelectSlot: (start: Date) => void;
   onSelectEvent: (appointment: CalendarAppointment) => void;
   onEventDrop: (arg: EventDropArg) => void;
@@ -38,6 +39,7 @@ interface AppointmentCalendarProps {
 
 export function AppointmentCalendar({
   appointments,
+  initialDate,
   onSelectSlot,
   onSelectEvent,
   onEventDrop,
@@ -68,6 +70,7 @@ export function AppointmentCalendar({
     <FullCalendar
       plugins={[timeGridPlugin, interactionPlugin]}
       initialView="timeGridWeek"
+      initialDate={initialDate}
       headerToolbar={{
         left: "prev,next today",
         center: "title",

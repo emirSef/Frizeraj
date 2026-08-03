@@ -118,7 +118,7 @@ export function CustomerForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-5">
-        <div className="flex items-start gap-4">
+        <div className="flex gap-4">
           <Avatar className="!size-32 shrink-0 after:rounded-full">
             {previewUrl ? <AvatarImage src={previewUrl} alt={previewName || "Customer"} /> : null}
             <AvatarFallback className="text-2xl">
@@ -126,7 +126,7 @@ export function CustomerForm({
             </AvatarFallback>
           </Avatar>
 
-          <div className="flex flex-col items-start gap-1.5">
+          <div className="flex h-32 flex-col justify-center gap-1.5">
             <input
               ref={fileInputRef}
               type="file"
