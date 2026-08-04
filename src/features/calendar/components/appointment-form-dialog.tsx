@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -17,7 +19,7 @@ import {
   appointmentFormDefaults,
   type AppointmentFormValues,
 } from "../schemas/appointment-schema";
-import type { CalendarAppointment } from "../types";
+import type { CalendarAppointment, CalendarClient } from "../types";
 
 interface AppointmentFormDialogProps {
   open: boolean;
@@ -26,6 +28,12 @@ interface AppointmentFormDialogProps {
   appointment?: CalendarAppointment | null;
   /** Prefilled values (used when creating from an empty calendar slot). */
   defaults?: Partial<AppointmentFormValues>;
+  /** Ensures this client appears selected even before the lookup finishes. */
+  preferredClient?: CalendarClient | null;
+  /** Locks the customer field (e.g. when opened from customer details). */
+  lockClient?: boolean;
+  /** Returns to the previous modal instead of just closing. */
+  onBack?: () => void;
 }
 
 function toFormValues(appointment: CalendarAppointment): AppointmentFormValues {
@@ -47,6 +55,9 @@ export function AppointmentFormDialog({
   onOpenChange,
   appointment,
   defaults,
+  preferredClient,
+  lockClient = false,
+  onBack,
 }: AppointmentFormDialogProps) {
   const t = useTranslations();
   const servicesQuery = useServices();
@@ -60,6 +71,13 @@ export function AppointmentFormDialog({
   const formValues: AppointmentFormValues = appointment
     ? toFormValues(appointment)
     : { ...appointmentFormDefaults, ...defaults };
+
+  const clients = React.useMemo(() => {
+    const list = clientsQuery.data ?? [];
+    if (!preferredClient) return list;
+    if (list.some((client) => client.id === preferredClient.id)) return list;
+    return [preferredClient, ...list];
+  }, [clientsQuery.data, preferredClient]);
 
   function handleSubmit(values: AppointmentFormValues) {
     if (appointment) {
@@ -89,11 +107,13 @@ export function AppointmentFormDialog({
             }
             defaultValues={formValues}
             services={servicesQuery.data ?? []}
-            clients={clientsQuery.data ?? []}
+            clients={clients}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             submitLabel={t("common.save")}
             showStatus={isEditing}
+            lockClient={lockClient}
+            onBack={onBack}
           />
         </div>
       </DialogContent>

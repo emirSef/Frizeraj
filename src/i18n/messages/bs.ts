@@ -6,6 +6,7 @@ export const bs: Messages = {
     save: "Sačuvaj",
     edit: "Uredi",
     delete: "Obriši",
+    back: "Nazad",
     search: "Pretraži",
     loading: "Učitavanje",
     previous: "Prethodna",

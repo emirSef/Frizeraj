@@ -4,6 +4,7 @@ export const en = {
     save: "Save",
     edit: "Edit",
     delete: "Delete",
+    back: "Back",
     search: "Search",
     loading: "Loading",
     previous: "Previous",

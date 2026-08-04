@@ -46,6 +46,10 @@ interface AppointmentFormProps {
   isSubmitting: boolean;
   submitLabel?: string;
   showStatus?: boolean;
+  /** When true, the customer field cannot be changed. */
+  lockClient?: boolean;
+  /** When set, replaces Cancel with a Back action that returns to the previous modal. */
+  onBack?: () => void;
 }
 
 export function AppointmentForm({
@@ -56,6 +60,8 @@ export function AppointmentForm({
   isSubmitting,
   submitLabel = "Save",
   showStatus = false,
+  lockClient = false,
+  onBack,
 }: AppointmentFormProps) {
   const t = useTranslations();
   const form = useForm<AppointmentFormValues>({
@@ -93,7 +99,7 @@ export function AppointmentForm({
                   clients={clients}
                   value={field.value}
                   onChange={field.onChange}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || lockClient}
                   accentColor={selectedService?.color ?? "#3b82f6"}
                   invalid={Boolean(fieldState.error)}
                 />
@@ -357,18 +363,30 @@ export function AppointmentForm({
         )}
 
         <div className="grid grid-cols-2 gap-3 pt-1">
-          <DialogClose
-            render={
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={isSubmitting}
-                className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
-              >
-                {t("common.cancel")}
-              </Button>
-            }
-          />
+          {onBack ? (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={isSubmitting}
+              className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
+              onClick={onBack}
+            >
+              {t("common.back")}
+            </Button>
+          ) : (
+            <DialogClose
+              render={
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={isSubmitting}
+                  className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
+                >
+                  {t("common.cancel")}
+                </Button>
+              }
+            />
+          )}
           <Button
             type="submit"
             disabled={isSubmitting}

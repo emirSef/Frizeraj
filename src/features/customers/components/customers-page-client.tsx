@@ -49,6 +49,7 @@ export function CustomersPageClient() {
   const [appointmentDefaults, setAppointmentDefaults] = React.useState<
     Partial<AppointmentFormValues> | undefined
   >(undefined);
+  const [appointmentReturnToDetails, setAppointmentReturnToDetails] = React.useState(false);
 
   const sortField = (sorting[0]?.id ?? "name") as CustomerSortField;
   const sortOrder: SortOrder = sorting[0]?.desc ? "desc" : "asc";
@@ -92,13 +93,28 @@ export function CustomersPageClient() {
   );
 
   const handleNewAppointmentFromDetails = React.useCallback((customer: CustomerListItem) => {
+    setDetailsCustomer(customer);
     setDetailsOpen(false);
+    setAppointmentReturnToDetails(true);
     setAppointmentDefaults({
       client_id: customer.id,
       date: format(new Date(), "yyyy-MM-dd"),
       start_time: "09:00",
     });
     setAppointmentFormOpen(true);
+  }, []);
+
+  const handleBackFromAppointment = React.useCallback(() => {
+    setAppointmentFormOpen(false);
+    setAppointmentReturnToDetails(false);
+    setDetailsOpen(true);
+  }, []);
+
+  const handleAppointmentOpenChange = React.useCallback((open: boolean) => {
+    setAppointmentFormOpen(open);
+    if (!open) {
+      setAppointmentReturnToDetails(false);
+    }
   }, []);
 
   const handleDelete = React.useCallback(
@@ -221,8 +237,19 @@ export function CustomersPageClient() {
       />
       <AppointmentFormDialog
         open={appointmentFormOpen}
-        onOpenChange={setAppointmentFormOpen}
+        onOpenChange={handleAppointmentOpenChange}
         defaults={appointmentDefaults}
+        preferredClient={
+          detailsCustomer && appointmentDefaults?.client_id === detailsCustomer.id
+            ? {
+                id: detailsCustomer.id,
+                first_name: detailsCustomer.first_name,
+                last_name: detailsCustomer.last_name,
+              }
+            : null
+        }
+        lockClient={appointmentReturnToDetails}
+        onBack={appointmentReturnToDetails ? handleBackFromAppointment : undefined}
       />
     </div>
   );
