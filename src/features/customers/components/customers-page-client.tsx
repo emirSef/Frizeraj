@@ -3,11 +3,14 @@
 import * as React from "react";
 import { getCoreRowModel, useReactTable, type SortingState } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, SearchIcon } from "lucide-react";
 
+import { HeaderSlotContent } from "@/components/layout/header-slot";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { AppointmentFormDialog } from "@/features/calendar/components/appointment-form-dialog";
 import type { AppointmentFormValues } from "@/features/calendar/schemas/appointment-schema";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -18,7 +21,7 @@ import { CustomerDetailsDialog } from "./customer-details-dialog";
 import { CustomerFormDialog } from "./customer-form-dialog";
 import { CustomersGrid } from "./customers-grid";
 import { CustomersTable } from "./customers-table";
-import { CustomersToolbar } from "./customers-toolbar";
+import { CustomersSortFilter, CustomersViewToggle } from "./customers-toolbar";
 import { useCustomers } from "../hooks/use-customers";
 import { useDeleteCustomer } from "../hooks/use-customer-mutations";
 import {
@@ -160,31 +163,45 @@ export function CustomersPageClient() {
 
   return (
     <div className="space-y-6">
+      <HeaderSlotContent>
+        <div className="relative w-full max-w-md">
+          <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
+          <Input
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            placeholder={t("customers.searchPlaceholder")}
+            className="pl-8"
+            aria-label={t("customers.searchPlaceholder")}
+          />
+        </div>
+      </HeaderSlotContent>
+
       <PageHeader
         title={t("customers.title")}
-        description={t("customers.description")}
+        titleAside={<CustomersViewToggle view={view} onViewChange={setView} />}
+        className="-mx-4 border-b px-4 md:-mx-6 md:px-6"
         actions={
-          <Button onClick={openCreate}>
-            <PlusIcon className="size-4" />
-            {t("customers.newCustomer")}
-          </Button>
+          <>
+            {isFetching ? (
+              <span className="text-muted-foreground text-xs">{t("customers.updating")}</span>
+            ) : null}
+            <CustomersSortFilter
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSortChange={handleSortChange}
+              filters={filters}
+              onFiltersChange={setFilters}
+            />
+            <Separator orientation="vertical" className="mx-1 hidden h-[30px] w-[2px] sm:block" />
+            <Button onClick={openCreate}>
+              <PlusIcon className="size-4" />
+              {t("customers.newCustomer")}
+            </Button>
+          </>
         }
       />
 
       <Card className="gap-0 p-0">
-        <CustomersToolbar
-          search={searchInput}
-          onSearchChange={setSearchInput}
-          view={view}
-          onViewChange={setView}
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSortChange={handleSortChange}
-          filters={filters}
-          onFiltersChange={setFilters}
-          isFetching={isFetching}
-        />
-
         {view === "list" ? (
           <CustomersTable table={table} isLoading={isLoading} onRowClick={handleView} />
         ) : (

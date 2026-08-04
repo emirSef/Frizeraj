@@ -83,7 +83,7 @@ export function CustomerDetailsDialog({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="overflow-hidden sm:max-w-2xl">
-          <DialogHeader>
+          <DialogHeader className="-mx-4 border-b px-4 pr-12 pb-4">
             <DialogTitle>{t("customers.customerDetails")}</DialogTitle>
             <DialogDescription className="sr-only">
               View {fullName}&apos;s profile and appointment history.
@@ -103,19 +103,47 @@ export function CustomerDetailsDialog({
             ) : (
               avatar
             )}
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{fullName}</p>
               <p className="text-muted-foreground truncate text-sm">
                 {customer.email ?? customer.phone ?? "No contact info"}
               </p>
             </div>
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <Button type="button" variant="outline" size="sm" onClick={() => onEdit(customer)}>
+                <PencilIcon className="size-4" />
+                {t("customers.edit")}
+              </Button>
+              <Button type="button" size="sm" onClick={() => onNewAppointment(customer)}>
+                <CalendarPlusIcon className="size-4" />
+                {t("calendar.newAppointment")}
+              </Button>
+            </div>
           </div>
 
-          <Tabs defaultValue="overview" className="mt-2">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="appointments">Appointment History</TabsTrigger>
-              <TabsTrigger value="records">Service Records</TabsTrigger>
+          <Tabs defaultValue="overview" className="mt-2 gap-4">
+            <TabsList
+              variant="line"
+              className="h-auto w-full justify-center gap-6 rounded-none border-b bg-transparent p-0"
+            >
+              <TabsTrigger
+                value="overview"
+                className="text-muted-foreground data-active:text-foreground h-auto flex-none rounded-none bg-transparent px-0.5 pb-3 shadow-none hover:bg-transparent data-active:bg-transparent data-active:shadow-none after:!bottom-0 hover:after:opacity-100 dark:data-active:bg-transparent"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger
+                value="appointments"
+                className="text-muted-foreground data-active:text-foreground h-auto flex-none rounded-none bg-transparent px-0.5 pb-3 shadow-none hover:bg-transparent data-active:bg-transparent data-active:shadow-none after:!bottom-0 hover:after:opacity-100 dark:data-active:bg-transparent"
+              >
+                Appointment History
+              </TabsTrigger>
+              <TabsTrigger
+                value="records"
+                className="text-muted-foreground data-active:text-foreground h-auto flex-none rounded-none bg-transparent px-0.5 pb-3 shadow-none hover:bg-transparent data-active:bg-transparent data-active:shadow-none after:!bottom-0 hover:after:opacity-100 dark:data-active:bg-transparent"
+              >
+                Service Records
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
@@ -188,17 +216,6 @@ export function CustomerDetailsDialog({
               <ServiceRecordsTab clientId={open ? customer.id : null} />
             </TabsContent>
           </Tabs>
-
-          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
-            <Button type="button" variant="outline" onClick={() => onEdit(customer)}>
-              <PencilIcon className="size-4" />
-              {t("customers.edit")}
-            </Button>
-            <Button type="button" onClick={() => onNewAppointment(customer)}>
-              <CalendarPlusIcon className="size-4" />
-              {t("calendar.newAppointment")}
-            </Button>
-          </div>
         </DialogContent>
       </Dialog>
 
