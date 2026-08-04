@@ -5,7 +5,6 @@ import {
   LayoutGridIcon,
   ListFilterIcon,
   Rows2Icon,
-  SearchIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useTranslations } from "@/i18n";
 import {
@@ -53,165 +51,147 @@ const GENDER_OPTIONS: { value: CustomerGenderFilter; labelKey: string }[] = [
   { value: "male", labelKey: "customers.male" },
 ];
 
-interface CustomersToolbarProps {
-  search: string;
-  onSearchChange: (search: string) => void;
+interface CustomersViewToggleProps {
   view: CustomerViewMode;
   onViewChange: (view: CustomerViewMode) => void;
+}
+
+export function CustomersViewToggle({ view, onViewChange }: CustomersViewToggleProps) {
+  const t = useTranslations();
+
+  return (
+    <ToggleGroup
+      aria-label={t("customers.view")}
+      value={[view]}
+      onValueChange={(value) => {
+        const next = value[0] as CustomerViewMode | undefined;
+        if (next) onViewChange(next);
+      }}
+      className="bg-transparent h-auto gap-5 self-stretch rounded-none p-0"
+    >
+      <ToggleGroupItem
+        value="list"
+        className="text-muted-foreground data-pressed:text-foreground relative h-auto min-h-full gap-2 self-stretch rounded-none border-0 bg-transparent px-0.5 pb-5 text-sm font-medium shadow-none hover:bg-transparent data-pressed:bg-transparent data-pressed:shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-foreground after:opacity-0 data-pressed:after:opacity-100 dark:data-pressed:bg-transparent"
+      >
+        <Rows2Icon className="size-4" strokeWidth={2} />
+        {t("customers.listView")}
+      </ToggleGroupItem>
+      <ToggleGroupItem
+        value="grid"
+        className="text-muted-foreground data-pressed:text-foreground relative h-auto min-h-full gap-2 self-stretch rounded-none border-0 bg-transparent px-0.5 pb-5 text-sm font-medium shadow-none hover:bg-transparent data-pressed:bg-transparent data-pressed:shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-foreground after:opacity-0 data-pressed:after:opacity-100 dark:data-pressed:bg-transparent"
+      >
+        <LayoutGridIcon className="size-4" strokeWidth={2} />
+        {t("customers.gridView")}
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
+}
+
+interface CustomersSortFilterProps {
   sortField: CustomerSortField;
   sortOrder: SortOrder;
   onSortChange: (sortField: CustomerSortField, sortOrder: SortOrder) => void;
   filters: CustomerFilters;
   onFiltersChange: (filters: CustomerFilters) => void;
-  isFetching: boolean;
 }
 
-export function CustomersToolbar({
-  search,
-  onSearchChange,
-  view,
-  onViewChange,
+export function CustomersSortFilter({
   sortField,
   sortOrder,
   onSortChange,
   filters,
   onFiltersChange,
-  isFetching,
-}: CustomersToolbarProps) {
+}: CustomersSortFilterProps) {
   const t = useTranslations();
   const activeFilters = countActiveFilters(filters);
 
   return (
-    <div className="flex flex-col gap-3 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
-      <div className="relative w-full lg:max-w-xs">
-        <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
-        <Input
-          value={search}
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder={t("customers.searchPlaceholder")}
-          className="pl-8"
-          aria-label={t("customers.searchPlaceholder")}
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="outline" className="border-foreground">
+              <ArrowDownWideNarrowIcon />
+              {t("customers.sortBy")}
+            </Button>
+          }
         />
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        {isFetching ? (
-          <span className="text-muted-foreground mr-1 text-xs">{t("customers.updating")}</span>
-        ) : null}
-
-        <ToggleGroup
-          aria-label={t("customers.view")}
-          value={[view]}
-          onValueChange={(value) => {
-            const next = value[0] as CustomerViewMode | undefined;
-            if (next) onViewChange(next);
-          }}
-          className="bg-transparent h-auto gap-8 rounded-none p-0"
-        >
-          <ToggleGroupItem
-            value="list"
-            className="text-muted-foreground data-pressed:text-foreground relative h-auto gap-2 rounded-none border-0 bg-transparent px-0 py-2 text-sm font-medium shadow-none hover:bg-transparent data-pressed:bg-transparent data-pressed:shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-foreground after:opacity-0 data-pressed:after:opacity-100"
+        <DropdownMenuContent align="end" className="w-48 rounded-sm">
+          <DropdownMenuRadioGroup
+            value={sortField}
+            onValueChange={(value) => onSortChange(value as CustomerSortField, sortOrder)}
           >
-            <Rows2Icon className="size-4" strokeWidth={1.75} />
-            {t("customers.listView")}
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="grid"
-            className="text-muted-foreground data-pressed:text-foreground relative h-auto gap-2 rounded-none border-0 bg-transparent px-0 py-2 text-sm font-medium shadow-none hover:bg-transparent data-pressed:bg-transparent data-pressed:shadow-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-foreground after:opacity-0 data-pressed:after:opacity-100"
-          >
-            <LayoutGridIcon className="size-4" strokeWidth={1.75} />
-            {t("customers.gridView")}
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="outline">
-                <ArrowDownWideNarrowIcon />
-                {t("customers.sortBy")}
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end" className="w-48 rounded-sm">
-            <DropdownMenuRadioGroup
-              value={sortField}
-              onValueChange={(value) => onSortChange(value as CustomerSortField, sortOrder)}
-            >
-              <DropdownMenuLabel>{t("customers.sortBy")}</DropdownMenuLabel>
-              {SORT_FIELDS.map((field) => (
-                <DropdownMenuRadioItem key={field.value} value={field.value}>
-                  {t(field.labelKey)}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={sortOrder}
-              onValueChange={(value) => onSortChange(sortField, value as SortOrder)}
-            >
-              <DropdownMenuLabel>{t("customers.order")}</DropdownMenuLabel>
-              <DropdownMenuRadioItem value="asc">{t("customers.ascending")}</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="desc">
-                {t("customers.descending")}
+            <DropdownMenuLabel>{t("customers.sortBy")}</DropdownMenuLabel>
+            {SORT_FIELDS.map((field) => (
+              <DropdownMenuRadioItem key={field.value} value={field.value}>
+                {t(field.labelKey)}
               </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            ))}
+          </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup
+            value={sortOrder}
+            onValueChange={(value) => onSortChange(sortField, value as SortOrder)}
+          >
+            <DropdownMenuLabel>{t("customers.order")}</DropdownMenuLabel>
+            <DropdownMenuRadioItem value="asc">{t("customers.ascending")}</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="desc">{t("customers.descending")}</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="outline">
-                <ListFilterIcon />
-                {t("customers.filter")}
-                {activeFilters > 0 ? (
-                  <span className="bg-primary text-primary-foreground ml-0.5 inline-flex size-4 items-center justify-center rounded-full text-[0.625rem] font-semibold">
-                    {activeFilters}
-                  </span>
-                ) : null}
-              </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="outline" className="border-foreground">
+              <ListFilterIcon />
+              {t("customers.filter")}
+              {activeFilters > 0 ? (
+                <span className="bg-primary text-primary-foreground ml-0.5 inline-flex size-4 items-center justify-center rounded-full text-[0.625rem] font-semibold">
+                  {activeFilters}
+                </span>
+              ) : null}
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end" className="w-48 rounded-sm">
+          <DropdownMenuRadioGroup
+            value={filters.status}
+            onValueChange={(value) =>
+              onFiltersChange({ ...filters, status: value as CustomerStatusFilter })
             }
-          />
-          <DropdownMenuContent align="end" className="w-48 rounded-sm">
-            <DropdownMenuRadioGroup
-              value={filters.status}
-              onValueChange={(value) =>
-                onFiltersChange({ ...filters, status: value as CustomerStatusFilter })
-              }
-            >
-              <DropdownMenuLabel>{t("customers.status")}</DropdownMenuLabel>
-              {STATUS_OPTIONS.map((option) => (
-                <DropdownMenuRadioItem key={option.value} value={option.value}>
-                  {t(option.labelKey)}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={filters.gender}
-              onValueChange={(value) =>
-                onFiltersChange({ ...filters, gender: value as CustomerGenderFilter })
-              }
-            >
-              <DropdownMenuLabel>{t("customers.gender")}</DropdownMenuLabel>
-              {GENDER_OPTIONS.map((option) => (
-                <DropdownMenuRadioItem key={option.value} value={option.value}>
-                  {t(option.labelKey)}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-            {activeFilters > 0 ? (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => onFiltersChange(DEFAULT_CUSTOMER_FILTERS)}>
-                  {t("customers.clearFilters")}
-                </DropdownMenuItem>
-              </>
-            ) : null}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+          >
+            <DropdownMenuLabel>{t("customers.status")}</DropdownMenuLabel>
+            {STATUS_OPTIONS.map((option) => (
+              <DropdownMenuRadioItem key={option.value} value={option.value}>
+                {t(option.labelKey)}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup
+            value={filters.gender}
+            onValueChange={(value) =>
+              onFiltersChange({ ...filters, gender: value as CustomerGenderFilter })
+            }
+          >
+            <DropdownMenuLabel>{t("customers.gender")}</DropdownMenuLabel>
+            {GENDER_OPTIONS.map((option) => (
+              <DropdownMenuRadioItem key={option.value} value={option.value}>
+                {t(option.labelKey)}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+          {activeFilters > 0 ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onFiltersChange(DEFAULT_CUSTOMER_FILTERS)}>
+                {t("customers.clearFilters")}
+              </DropdownMenuItem>
+            </>
+          ) : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }
