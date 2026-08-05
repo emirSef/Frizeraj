@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
@@ -13,17 +14,25 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DialogClose } from "@/components/ui/dialog";
+import { useTranslations } from "@/i18n";
+import { ServiceRecordPhotoField } from "./service-record-photo-field";
 import {
   serviceRecordSchema,
   type ServiceRecordFormValues,
 } from "../schemas/service-record-schema";
 
+export type ServiceRecordPhotoChanges = {
+  beforeFile: File | null;
+  afterFile: File | null;
+  clearBefore: boolean;
+  clearAfter: boolean;
+};
+
 interface ServiceRecordFormProps {
   defaultValues: ServiceRecordFormValues;
-  onSubmit: (values: ServiceRecordFormValues) => void;
+  onSubmit: (values: ServiceRecordFormValues, photos: ServiceRecordPhotoChanges) => void;
   isSubmitting: boolean;
   submitLabel?: string;
 }
@@ -32,27 +41,91 @@ export function ServiceRecordForm({
   defaultValues,
   onSubmit,
   isSubmitting,
-  submitLabel = "Complete appointment",
+  submitLabel,
 }: ServiceRecordFormProps) {
+  const t = useTranslations();
   const form = useForm<ServiceRecordFormValues>({
     resolver: zodResolver(serviceRecordSchema),
     defaultValues,
   });
 
+  const [beforeFile, setBeforeFile] = React.useState<File | null>(null);
+  const [afterFile, setAfterFile] = React.useState<File | null>(null);
+  const [clearBefore, setClearBefore] = React.useState(false);
+  const [clearAfter, setClearAfter] = React.useState(false);
+  const [beforePreview, setBeforePreview] = React.useState<string | null>(
+    defaultValues.before_image_url || null,
+  );
+  const [afterPreview, setAfterPreview] = React.useState<string | null>(
+    defaultValues.after_image_url || null,
+  );
+
+  React.useEffect(() => {
+    return () => {
+      if (beforePreview?.startsWith("blob:")) URL.revokeObjectURL(beforePreview);
+      if (afterPreview?.startsWith("blob:")) URL.revokeObjectURL(afterPreview);
+    };
+  }, [beforePreview, afterPreview]);
+
+  function setPreview(
+    kind: "before" | "after",
+    next: string | null,
+    current: string | null,
+  ) {
+    if (current?.startsWith("blob:")) URL.revokeObjectURL(current);
+    if (kind === "before") setBeforePreview(next);
+    else setAfterPreview(next);
+  }
+
+  function handleBeforeSelect(file: File) {
+    setBeforeFile(file);
+    setClearBefore(false);
+    setPreview("before", URL.createObjectURL(file), beforePreview);
+  }
+
+  function handleAfterSelect(file: File) {
+    setAfterFile(file);
+    setClearAfter(false);
+    setPreview("after", URL.createObjectURL(file), afterPreview);
+  }
+
+  function handleBeforeClear() {
+    setBeforeFile(null);
+    setClearBefore(true);
+    setPreview("before", null, beforePreview);
+    form.setValue("before_image_url", "");
+  }
+
+  function handleAfterClear() {
+    setAfterFile(null);
+    setClearAfter(true);
+    setPreview("after", null, afterPreview);
+    form.setValue("after_image_url", "");
+  }
+
+  function handleFormSubmit(values: ServiceRecordFormValues) {
+    onSubmit(values, {
+      beforeFile,
+      afterFile,
+      clearBefore,
+      clearAfter,
+    });
+  }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="hair_condition"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Hair Condition</FormLabel>
+                <FormLabel>{t("serviceRecords.hairCondition")}</FormLabel>
                 <FormControl>
                   <Textarea
                     rows={2}
-                    placeholder="e.g. Dry ends, healthy roots"
+                    placeholder={t("serviceRecords.hairConditionPlaceholder")}
                     disabled={isSubmitting}
                     {...field}
                   />
@@ -67,11 +140,11 @@ export function ServiceRecordForm({
             name="treatment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Treatment</FormLabel>
+                <FormLabel>{t("serviceRecords.treatment")}</FormLabel>
                 <FormControl>
                   <Textarea
                     rows={2}
-                    placeholder="What was performed"
+                    placeholder={t("serviceRecords.treatmentPlaceholder")}
                     disabled={isSubmitting}
                     {...field}
                   />
@@ -86,11 +159,11 @@ export function ServiceRecordForm({
             name="products_used"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Products Used</FormLabel>
+                <FormLabel>{t("serviceRecords.productsUsed")}</FormLabel>
                 <FormControl>
                   <Textarea
                     rows={2}
-                    placeholder="e.g. Olaplex No.3, Wella Color Touch"
+                    placeholder={t("serviceRecords.productsUsedPlaceholder")}
                     disabled={isSubmitting}
                     {...field}
                   />
@@ -105,11 +178,11 @@ export function ServiceRecordForm({
             name="color_formula"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Color Formula</FormLabel>
+                <FormLabel>{t("serviceRecords.colorFormula")}</FormLabel>
                 <FormControl>
                   <Textarea
                     rows={2}
-                    placeholder="e.g. 6/0 + 7/43, 20 vol"
+                    placeholder={t("serviceRecords.colorFormulaPlaceholder")}
                     disabled={isSubmitting}
                     {...field}
                   />
@@ -125,9 +198,13 @@ export function ServiceRecordForm({
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes</FormLabel>
+              <FormLabel>{t("serviceRecords.notes")}</FormLabel>
               <FormControl>
-                <Textarea placeholder="Any notes about the visit" disabled={isSubmitting} {...field} />
+                <Textarea
+                  placeholder={t("serviceRecords.notesPlaceholder")}
+                  disabled={isSubmitting}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,11 +216,11 @@ export function ServiceRecordForm({
           name="recommendations"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Recommendations</FormLabel>
+              <FormLabel>{t("serviceRecords.recommendations")}</FormLabel>
               <FormControl>
                 <Textarea
                   rows={2}
-                  placeholder="Home care, next visit suggestions"
+                  placeholder={t("serviceRecords.recommendationsPlaceholder")}
                   disabled={isSubmitting}
                   {...field}
                 />
@@ -154,42 +231,19 @@ export function ServiceRecordForm({
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField
-            control={form.control}
-            name="before_image_url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Before Image URL</FormLabel>
-                <FormControl>
-                  <Input
-                    type="url"
-                    placeholder="https://…"
-                    disabled={isSubmitting}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <ServiceRecordPhotoField
+            label={t("serviceRecords.beforePhoto")}
+            previewUrl={beforePreview}
+            disabled={isSubmitting}
+            onFileSelect={handleBeforeSelect}
+            onClear={handleBeforeClear}
           />
-
-          <FormField
-            control={form.control}
-            name="after_image_url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>After Image URL</FormLabel>
-                <FormControl>
-                  <Input
-                    type="url"
-                    placeholder="https://…"
-                    disabled={isSubmitting}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <ServiceRecordPhotoField
+            label={t("serviceRecords.afterPhoto")}
+            previewUrl={afterPreview}
+            disabled={isSubmitting}
+            onFileSelect={handleAfterSelect}
+            onClear={handleAfterClear}
           />
         </div>
 
@@ -197,13 +251,13 @@ export function ServiceRecordForm({
           <DialogClose
             render={
               <Button type="button" variant="outline" disabled={isSubmitting}>
-                Cancel
+                {t("common.cancel")}
               </Button>
             }
           />
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2Icon className="size-4 animate-spin" /> : null}
-            {submitLabel}
+            {submitLabel ?? t("calendar.completeAppointment")}
           </Button>
         </div>
       </form>
