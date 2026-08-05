@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { addDays, addMonths, isSameDay, isSameMonth, startOfMonth, startOfWeek } from "date-fns";
+import { addDays, addMonths, format, isSameMonth, startOfMonth, startOfWeek } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { todayDateString } from "@/lib/timezone";
 import { useLocale } from "@/i18n";
 
 const DAYS_IN_WEEK = 7;
@@ -27,18 +28,20 @@ interface MiniCalendarProps {
 /**
  * Compact month grid for quickly jumping to a date. Weeks start on Monday and
  * month/weekday labels follow the active app locale.
+ *
+ * "Today" follows Europe/Sarajevo so SSR/Vercel UTC and the salon calendar agree.
  */
 export function MiniCalendar({ selected, onSelect, className }: MiniCalendarProps) {
   const { locale, t } = useLocale();
 
-  // `new Date()` resolves against the server's timezone during SSR, so the grid
-  // is only built after mount to keep hydration stable.
-  const [today, setToday] = React.useState<Date | null>(null);
+  // Avoid SSR/client mismatch: resolve "today" only after mount.
+  const [todayKey, setTodayKey] = React.useState<string | null>(null);
   const [monthOffset, setMonthOffset] = React.useState(0);
 
-  React.useEffect(() => setToday(new Date()), []);
+  React.useEffect(() => setTodayKey(todayDateString()), []);
 
-  const anchor = selected ?? today;
+  const selectedKey = selected ? format(selected, "yyyy-MM-dd") : null;
+  const anchor = selected ?? (todayKey ? new Date(`${todayKey}T12:00:00`) : null);
   const month = anchor ? startOfMonth(addMonths(anchor, monthOffset)) : null;
 
   const weekdays = React.useMemo(() => {
@@ -97,13 +100,14 @@ export function MiniCalendar({ selected, onSelect, className }: MiniCalendarProp
         ))}
 
         {days.map((day) => {
+          const dayKey = format(day, "yyyy-MM-dd");
           const isOutside = !isSameMonth(day, month);
-          const isToday = today ? isSameDay(day, today) : false;
-          const isSelected = selected ? isSameDay(day, selected) : false;
+          const isToday = todayKey ? dayKey === todayKey : false;
+          const isSelected = selectedKey ? dayKey === selectedKey : false;
 
           return (
             <button
-              key={day.toISOString()}
+              key={dayKey}
               type="button"
               onClick={() => onSelect?.(day)}
               aria-current={isToday ? "date" : undefined}

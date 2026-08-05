@@ -1,4 +1,7 @@
 import { expect, type Page } from "@playwright/test";
+import { addDays } from "date-fns";
+
+import { parseBusinessDate, todayDateString, toDateString } from "../src/lib/timezone";
 
 export const e2eCredentials = {
   email: process.env.E2E_USER_EMAIL ?? "",
@@ -32,8 +35,7 @@ export function uniqueSuffix(): string {
   return Date.now().toString(36);
 }
 
+/** Civil appointment date in Europe/Sarajevo (not UTC via toISOString). */
 export function appointmentDate(daysFromNow = 14): string {
-  const date = new Date();
-  date.setDate(date.getDate() + daysFromNow);
-  return date.toISOString().slice(0, 10);
+  return toDateString(addDays(parseBusinessDate(todayDateString()), daysFromNow));
 }

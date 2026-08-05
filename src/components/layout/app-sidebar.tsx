@@ -20,6 +20,7 @@ export function AppSidebar() {
 
   function handleSelectDate(date: Date) {
     setPickedDate(date);
+    // Mini-calendar cells are civil dates; keep the visible Y-M-D (not UTC).
     router.push(`${ROUTES.calendar}?date=${format(date, "yyyy-MM-dd")}`);
   }
 

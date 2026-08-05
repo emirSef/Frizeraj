@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { endOfWeek, format, parseISO, startOfWeek, subDays } from "date-fns";
+import { endOfWeek, startOfWeek, subDays } from "date-fns";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import type { DatesSetArg, EventDropArg } from "@fullcalendar/core";
 import type { EventResizeDoneArg } from "@fullcalendar/interaction";
@@ -11,6 +11,13 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
 import { CompleteAppointmentDialog } from "@/features/service-records";
 import { useTranslations } from "@/i18n";
+import {
+  formatInBusinessTimeZone,
+  parseBusinessDate,
+  toDateString,
+  toTimeString,
+  todayDateString,
+} from "@/lib/timezone";
 import { useAppointments } from "../hooks/use-appointments";
 import { useUpdateAppointmentTime } from "../hooks/use-appointment-mutations";
 import { AppointmentDetailsDialog } from "./appointment-details-dialog";
@@ -36,9 +43,6 @@ const AppointmentCalendar = dynamic(
   },
 );
 
-const DATE_FMT = "yyyy-MM-dd";
-const TIME_FMT = "HH:mm:ss";
-
 interface CalendarPageClientProps {
   /** `yyyy-MM-dd` day to open on; defaults to the current week. */
   initialDate?: string;
@@ -47,12 +51,12 @@ interface CalendarPageClientProps {
 export function CalendarPageClient({ initialDate }: CalendarPageClientProps) {
   const t = useTranslations();
   const focusDate = useMemo(
-    () => (initialDate ? parseISO(initialDate) : new Date()),
+    () => parseBusinessDate(initialDate ?? todayDateString()),
     [initialDate],
   );
   const [range, setRange] = useState<DateRange>(() => ({
-    start: format(startOfWeek(focusDate, { weekStartsOn: 1 }), DATE_FMT),
-    end: format(endOfWeek(focusDate, { weekStartsOn: 1 }), DATE_FMT),
+    start: toDateString(startOfWeek(focusDate, { weekStartsOn: 1 })),
+    end: toDateString(endOfWeek(focusDate, { weekStartsOn: 1 })),
   }));
 
   const [formOpen, setFormOpen] = useState(false);
@@ -72,17 +76,17 @@ export function CalendarPageClient({ initialDate }: CalendarPageClientProps) {
 
   const handleDatesSet = useCallback((arg: DatesSetArg) => {
     setRange({
-      start: format(arg.start, DATE_FMT),
+      start: toDateString(arg.start),
       // arg.end is exclusive (start of the day after the last visible day).
-      end: format(subDays(arg.end, 1), DATE_FMT),
+      end: toDateString(subDays(arg.end, 1)),
     });
   }, []);
 
   const handleSelectSlot = useCallback((start: Date) => {
     setEditing(null);
     setCreateDefaults({
-      date: format(start, DATE_FMT),
-      start_time: format(start, "HH:mm"),
+      date: toDateString(start),
+      start_time: formatInBusinessTimeZone(start, "HH:mm"),
     });
     setFormOpen(true);
   }, []);
@@ -103,9 +107,9 @@ export function CalendarPageClient({ initialDate }: CalendarPageClientProps) {
         {
           id,
           update: {
-            date: format(start, DATE_FMT),
-            start_time: format(start, TIME_FMT),
-            end_time: format(end, TIME_FMT),
+            date: toDateString(start),
+            start_time: toTimeString(start),
+            end_time: toTimeString(end),
           },
         },
         { onError: () => arg.revert() },
@@ -125,9 +129,9 @@ export function CalendarPageClient({ initialDate }: CalendarPageClientProps) {
         {
           id,
           update: {
-            date: format(start, DATE_FMT),
-            start_time: format(start, TIME_FMT),
-            end_time: format(end, TIME_FMT),
+            date: toDateString(start),
+            start_time: toTimeString(start),
+            end_time: toTimeString(end),
           },
         },
         { onError: () => arg.revert() },
@@ -152,7 +156,7 @@ export function CalendarPageClient({ initialDate }: CalendarPageClientProps) {
   function openCreate() {
     setEditing(null);
     setCreateDefaults({
-      date: format(focusDate, DATE_FMT),
+      date: toDateString(focusDate),
       start_time: "09:00",
     });
     setFormOpen(true);

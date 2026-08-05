@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import { getCoreRowModel, useReactTable, type SortingState } from "@tanstack/react-table";
-import { format } from "date-fns";
 import { PlusIcon, SearchIcon } from "lucide-react";
+
+import { todayDateString } from "@/lib/timezone";
 
 import { HeaderSlotContent } from "@/components/layout/header-slot";
 import { PageHeader } from "@/components/shared/page-header";
@@ -101,7 +102,7 @@ export function CustomersPageClient() {
     setAppointmentReturnToDetails(true);
     setAppointmentDefaults({
       client_id: customer.id,
-      date: format(new Date(), "yyyy-MM-dd"),
+      date: todayDateString(),
       start_time: "09:00",
     });
     setAppointmentFormOpen(true);

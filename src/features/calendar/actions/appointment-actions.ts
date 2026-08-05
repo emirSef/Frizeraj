@@ -39,8 +39,11 @@ async function getService(supabase: SupabaseServerClient, serviceId: string) {
 
 /**
  * Enforces the "appointments cannot overlap" rule. Cancelled and no-show
- * appointments do not block a slot. Times are compared as "HH:mm:ss" strings,
- * which sort lexicographically in chronological order.
+ * appointments do not block a slot.
+ *
+ * Storage model: civil `date` (yyyy-MM-dd) + wall-clock `time` for Europe/Sarajevo.
+ * Overlaps are compared as "HH:mm:ss" strings on the same calendar day (lexicographic
+ * order matches chronological order for zero-padded times).
  */
 async function assertNoOverlap(
   supabase: SupabaseServerClient,
