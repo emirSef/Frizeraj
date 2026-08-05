@@ -22,6 +22,8 @@ interface CustomerFormDialogProps {
   onOpenChange: (open: boolean) => void;
   /** When provided the dialog edits an existing customer, otherwise it creates one. */
   customer?: CustomerListItem | null;
+  /** Returns to the previous modal (e.g. customer details) instead of just closing. */
+  onBack?: () => void;
 }
 
 function toFormValues(customer: CustomerListItem): CustomerFormValues {
@@ -39,7 +41,12 @@ function toFormValues(customer: CustomerListItem): CustomerFormValues {
   };
 }
 
-export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFormDialogProps) {
+export function CustomerFormDialog({
+  open,
+  onOpenChange,
+  customer,
+  onBack,
+}: CustomerFormDialogProps) {
   const t = useTranslations();
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
@@ -90,6 +97,7 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             submitLabel={t("common.save")}
+            onBack={onBack}
           />
         </div>
       </DialogContent>
