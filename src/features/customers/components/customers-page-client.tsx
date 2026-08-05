@@ -47,6 +47,7 @@ export function CustomersPageClient() {
 
   const [formOpen, setFormOpen] = React.useState(false);
   const [editingCustomer, setEditingCustomer] = React.useState<CustomerListItem | null>(null);
+  const [editReturnToDetails, setEditReturnToDetails] = React.useState(false);
   const [detailsOpen, setDetailsOpen] = React.useState(false);
   const [detailsCustomer, setDetailsCustomer] = React.useState<CustomerListItem | null>(null);
   const [appointmentFormOpen, setAppointmentFormOpen] = React.useState(false);
@@ -85,16 +86,30 @@ export function CustomersPageClient() {
 
   const handleEdit = React.useCallback((customer: CustomerListItem) => {
     setEditingCustomer(customer);
+    setEditReturnToDetails(false);
     setFormOpen(true);
   }, []);
 
-  const handleEditFromDetails = React.useCallback(
-    (customer: CustomerListItem) => {
-      setDetailsOpen(false);
-      handleEdit(customer);
-    },
-    [handleEdit],
-  );
+  const handleEditFromDetails = React.useCallback((customer: CustomerListItem) => {
+    setDetailsCustomer(customer);
+    setDetailsOpen(false);
+    setEditingCustomer(customer);
+    setEditReturnToDetails(true);
+    setFormOpen(true);
+  }, []);
+
+  const handleBackFromEdit = React.useCallback(() => {
+    setFormOpen(false);
+    setEditReturnToDetails(false);
+    setDetailsOpen(true);
+  }, []);
+
+  const handleFormOpenChange = React.useCallback((open: boolean) => {
+    setFormOpen(open);
+    if (!open) {
+      setEditReturnToDetails(false);
+    }
+  }, []);
 
   const handleNewAppointmentFromDetails = React.useCallback((customer: CustomerListItem) => {
     setDetailsCustomer(customer);
@@ -159,6 +174,7 @@ export function CustomersPageClient() {
 
   function openCreate() {
     setEditingCustomer(null);
+    setEditReturnToDetails(false);
     setFormOpen(true);
   }
 
@@ -245,7 +261,12 @@ export function CustomersPageClient() {
         </div>
       </Card>
 
-      <CustomerFormDialog open={formOpen} onOpenChange={setFormOpen} customer={editingCustomer} />
+      <CustomerFormDialog
+        open={formOpen}
+        onOpenChange={handleFormOpenChange}
+        customer={editingCustomer}
+        onBack={editReturnToDetails ? handleBackFromEdit : undefined}
+      />
       <CustomerDetailsDialog
         open={detailsOpen}
         onOpenChange={setDetailsOpen}

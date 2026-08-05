@@ -55,6 +55,8 @@ interface CustomerFormProps {
   onSubmit: (values: CustomerFormValues, avatarFile: File | null) => void;
   isSubmitting: boolean;
   submitLabel?: string;
+  /** Returns to the previous modal (e.g. customer details) instead of Cancel. */
+  onBack?: () => void;
 }
 
 export function CustomerForm({
@@ -62,6 +64,7 @@ export function CustomerForm({
   onSubmit,
   isSubmitting,
   submitLabel = "Save",
+  onBack,
 }: CustomerFormProps) {
   const t = useTranslations();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -447,18 +450,30 @@ export function CustomerForm({
         />
 
         <div className="grid grid-cols-2 gap-3 pt-1">
-          <DialogClose
-            render={
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={isSubmitting}
-                className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
-              >
-                {t("common.cancel")}
-              </Button>
-            }
-          />
+          {onBack ? (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={isSubmitting}
+              className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
+              onClick={onBack}
+            >
+              {t("common.back")}
+            </Button>
+          ) : (
+            <DialogClose
+              render={
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={isSubmitting}
+                  className="h-11 w-full rounded-sm bg-muted text-foreground hover:bg-muted/80"
+                >
+                  {t("common.cancel")}
+                </Button>
+              }
+            />
+          )}
           <Button
             type="submit"
             disabled={isSubmitting}
