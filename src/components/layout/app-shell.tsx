@@ -1,9 +1,7 @@
+import { AppHeader } from "@/components/layout/app-header";
 import { AppMobileNav } from "@/components/layout/app-mobile-nav";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { LanguageToggle } from "@/components/shared/language-toggle";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { UserMenu } from "@/features/auth";
-import { APP_NAME } from "@/lib/constants";
+import { HeaderSlotProvider } from "@/components/layout/header-slot";
 import type { UserRole } from "@/types";
 
 interface AppShellProps {
@@ -17,20 +15,15 @@ interface AppShellProps {
 
 export function AppShell({ children, user }: AppShellProps) {
   return (
-    <div className="flex min-h-svh w-full">
-      <AppSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="bg-background/80 sticky top-0 z-10 flex h-14 items-center justify-between gap-2 border-b px-4 backdrop-blur">
-          <span className="text-sm font-semibold tracking-tight md:hidden">{APP_NAME}</span>
-          <div className="ml-auto flex items-center gap-2">
-            <LanguageToggle />
-            <ThemeToggle />
-            <UserMenu fullName={user.fullName} email={user.email} role={user.role} />
-          </div>
-        </header>
-        <main className="flex-1 p-4 pb-20 md:p-6 md:pb-6">{children}</main>
-        <AppMobileNav />
+    <HeaderSlotProvider>
+      <div className="flex min-h-svh w-full">
+        <AppSidebar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <AppHeader user={user} />
+          <main className="flex-1 p-4 pb-20 md:p-6 md:pb-6">{children}</main>
+          <AppMobileNav />
+        </div>
       </div>
-    </div>
+    </HeaderSlotProvider>
   );
 }
