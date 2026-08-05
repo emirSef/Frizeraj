@@ -1,6 +1,8 @@
 "use client";
 
+import * as React from "react";
 import { Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -9,11 +11,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getErrorMessage } from "@/lib/errors";
+import { useTranslations } from "@/i18n";
 import type { ServiceRecord } from "@/types";
 import type { CalendarAppointment } from "@/features/calendar/types";
-import { ServiceRecordForm } from "./service-record-form";
+import {
+  ServiceRecordForm,
+  type ServiceRecordPhotoChanges,
+} from "./service-record-form";
 import { useCompleteAppointment } from "../hooks/use-complete-appointment";
 import { useServiceRecordByAppointment } from "../hooks/use-service-record-by-appointment";
+import {
+  deleteServiceRecordPhoto,
+  uploadServiceRecordPhoto,
+} from "../lib/upload-photos";
 import {
   serviceRecordFormDefaults,
   type ServiceRecordFormValues,
@@ -43,15 +54,16 @@ export function CompleteAppointmentDialog({
   onOpenChange,
   appointment,
 }: CompleteAppointmentDialogProps) {
+  const t = useTranslations();
   const recordQuery = useServiceRecordByAppointment(open ? (appointment?.id ?? null) : null);
   const completeAppointment = useCompleteAppointment();
+  const [isUploading, setIsUploading] = React.useState(false);
 
   if (!appointment) return null;
 
   const existingRecord = recordQuery.data ?? null;
   const isEditing = Boolean(existingRecord) || appointment.status === "completed";
 
-  // Prefill from an existing record, otherwise seed from the appointment.
   const defaultValues: ServiceRecordFormValues = existingRecord
     ? recordToForm(existingRecord)
     : {
@@ -60,47 +72,111 @@ export function CompleteAppointmentDialog({
         products_used: appointment.products ?? "",
       };
 
-  function handleSubmit(values: ServiceRecordFormValues) {
+  async function handleSubmit(
+    values: ServiceRecordFormValues,
+    photos: ServiceRecordPhotoChanges,
+  ) {
     if (!appointment) return;
-    completeAppointment.mutate(
-      {
+
+    const previousBefore = existingRecord?.before_image_url ?? "";
+    const previousAfter = existingRecord?.after_image_url ?? "";
+    const uploaded: string[] = [];
+
+    setIsUploading(true);
+    let beforeUrl = values.before_image_url;
+    let afterUrl = values.after_image_url;
+
+    try {
+      if (photos.beforeFile) {
+        beforeUrl = await uploadServiceRecordPhoto(
+          photos.beforeFile,
+          appointment.id,
+          "before",
+        );
+        uploaded.push(beforeUrl);
+      } else if (photos.clearBefore) {
+        beforeUrl = "";
+      }
+
+      if (photos.afterFile) {
+        afterUrl = await uploadServiceRecordPhoto(photos.afterFile, appointment.id, "after");
+        uploaded.push(afterUrl);
+      } else if (photos.clearAfter) {
+        afterUrl = "";
+      }
+    } catch (error) {
+      await Promise.allSettled(uploaded.map((url) => deleteServiceRecordPhoto(url)));
+      toast.error(t("serviceRecords.couldNotUpload"), {
+        description: getErrorMessage(error),
+      });
+      setIsUploading(false);
+      return;
+    }
+
+    try {
+      await completeAppointment.mutateAsync({
         appointmentId: appointment.id,
         clientId: appointment.client_id,
         serviceId: appointment.service_id,
-        values,
-      },
-      { onSuccess: () => onOpenChange(false) },
-    );
+        values: {
+          ...values,
+          before_image_url: beforeUrl,
+          after_image_url: afterUrl,
+        },
+      });
+
+      const deletions: Promise<void>[] = [];
+      if ((photos.beforeFile || photos.clearBefore) && previousBefore && previousBefore !== beforeUrl) {
+        deletions.push(deleteServiceRecordPhoto(previousBefore));
+      }
+      if ((photos.afterFile || photos.clearAfter) && previousAfter && previousAfter !== afterUrl) {
+        deletions.push(deleteServiceRecordPhoto(previousAfter));
+      }
+      await Promise.allSettled(deletions);
+
+      onOpenChange(false);
+    } catch {
+      await Promise.allSettled(uploaded.map((url) => deleteServiceRecordPhoto(url)));
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   const clientName = appointment.client
     ? `${appointment.client.first_name} ${appointment.client.last_name}`.trim()
-    : "this customer";
+    : t("serviceRecords.thisCustomer");
+
+  const isSubmitting = isUploading || completeAppointment.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit service record" : "Complete appointment"}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? t("calendar.editServiceRecord") : t("calendar.completeAppointment")}
+          </DialogTitle>
           <DialogDescription>
-            Record what was done for {clientName}
-            {appointment.service?.name ? ` · ${appointment.service.name}` : ""}. Saving marks the
-            appointment as completed.
+            {t("serviceRecords.dialogDescription", {
+              name: clientName,
+              service: appointment.service?.name ? ` · ${appointment.service.name}` : "",
+            })}
           </DialogDescription>
         </DialogHeader>
 
         {recordQuery.isLoading ? (
           <div className="text-muted-foreground flex items-center justify-center gap-2 py-10 text-sm">
             <Loader2Icon className="size-4 animate-spin" />
-            Loading…
+            {t("common.loading")}
           </div>
         ) : (
           <ServiceRecordForm
             key={existingRecord?.id ?? `new-${appointment.id}`}
             defaultValues={defaultValues}
             onSubmit={handleSubmit}
-            isSubmitting={completeAppointment.isPending}
-            submitLabel={isEditing ? "Save service record" : "Complete appointment"}
+            isSubmitting={isSubmitting}
+            submitLabel={
+              isEditing ? t("serviceRecords.saveRecord") : t("calendar.completeAppointment")
+            }
           />
         )}
       </DialogContent>

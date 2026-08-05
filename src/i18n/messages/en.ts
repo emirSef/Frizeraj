@@ -199,6 +199,34 @@ export const en = {
     couldNotActivate: "Could not activate service",
     couldNotDeactivate: "Could not deactivate service",
   },
+  serviceRecords: {
+    hairCondition: "Hair Condition",
+    hairConditionPlaceholder: "e.g. Dry ends, healthy roots",
+    treatment: "Treatment",
+    treatmentPlaceholder: "What was performed",
+    productsUsed: "Products Used",
+    productsUsedPlaceholder: "e.g. Olaplex No.3, Wella Color Touch",
+    colorFormula: "Color Formula",
+    colorFormulaPlaceholder: "e.g. 6/0 + 7/43, 20 vol",
+    notes: "Notes",
+    notesPlaceholder: "Any notes about the visit",
+    recommendations: "Recommendations",
+    recommendationsPlaceholder: "Home care, next visit suggestions",
+    beforePhoto: "Before photo",
+    afterPhoto: "After photo",
+    uploadPhoto: "Upload photo",
+    replacePhoto: "Replace photo",
+    removePhoto: "Remove",
+    uploadHint: "JPG, PNG or WEBP up to 10 MB. Photos are compressed before upload.",
+    couldNotUpload: "Could not upload photo",
+    saveRecord: "Save service record",
+    thisCustomer: "this customer",
+    dialogDescription:
+      "Record what was done for {name}{service}. Saving marks the appointment as completed.",
+    noRecordsYet: "No service records yet",
+    noRecordsDescription:
+      "Complete an appointment to record what was done to this customer's hair.",
+  },
 };
 
 type DeepStringRecord<T> = {
