@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import luxonPlugin from "@fullcalendar/luxon3";
 import type {
   DateSelectArg,
   DatesSetArg,
@@ -13,6 +14,7 @@ import type {
 } from "@fullcalendar/core";
 import type { EventResizeDoneArg } from "@fullcalendar/interaction";
 
+import { BUSINESS_TIMEZONE } from "@/lib/timezone";
 import { statusColor } from "../schemas/appointment-schema";
 import { clientLabel, type CalendarAppointment } from "../types";
 
@@ -68,9 +70,10 @@ export function AppointmentCalendar({
 
   return (
     <FullCalendar
-      plugins={[timeGridPlugin, interactionPlugin]}
+      plugins={[timeGridPlugin, interactionPlugin, luxonPlugin]}
       initialView="timeGridWeek"
       initialDate={initialDate}
+      timeZone={BUSINESS_TIMEZONE}
       headerToolbar={{
         left: "prev,next today",
         center: "title",

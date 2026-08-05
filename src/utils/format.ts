@@ -1,17 +1,37 @@
-import { format, formatDistanceToNow, type Locale } from "date-fns";
+import { formatDistanceToNow, type Locale } from "date-fns";
+
+import {
+  formatBusinessDate,
+  formatBusinessDateTime,
+  formatInBusinessTimeZone,
+} from "@/lib/timezone";
 
 type DateInput = Date | string | number;
+
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 function toDate(value: DateInput): Date {
   return value instanceof Date ? value : new Date(value);
 }
 
+/**
+ * Format a calendar date or timestamp for UI display in Europe/Sarajevo.
+ *
+ * - `yyyy-MM-dd` strings are treated as civil dates (no UTC-midnight shift).
+ * - Instants / ISO timestamps are shown in the salon timezone.
+ */
 export function formatDate(value: DateInput, pattern = "PP"): string {
-  return format(toDate(value), pattern);
+  if (typeof value === "string" && DATE_ONLY_RE.test(value)) {
+    return formatBusinessDate(value, pattern);
+  }
+  return formatInBusinessTimeZone(toDate(value), pattern);
 }
 
 export function formatDateTime(value: DateInput, pattern = "PPp"): string {
-  return format(toDate(value), pattern);
+  if (typeof value === "string" && DATE_ONLY_RE.test(value)) {
+    return formatBusinessDate(value, pattern);
+  }
+  return formatBusinessDateTime(value, pattern);
 }
 
 export function formatRelativeTime(value: DateInput, locale?: Locale): string {
